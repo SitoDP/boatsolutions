@@ -152,7 +152,7 @@
               </div>
             </div>
 
-            <button class="btn btn-outline btn-full" @click="openBooking('consulting')">
+            <button class="btn btn-outline btn-full" @click="openBooking({ programId: null, length: 30 })">
               {{ t.bookBtn }}
             </button>
           </div>
@@ -166,7 +166,7 @@
 import { computed, ref } from 'vue'
 import CalendarWidget from '../components/CalendarWidget.vue'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { usePageMeta } from '../composables/useMeta'
 import { validateEmail, type EmailValidation } from '../lib/email'
 
@@ -190,7 +190,7 @@ interface FormErrors {
   name: string; email: string; subject: string; message: string; privacy: string
 }
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { lang, useT } = useLanguage()
 const t = useT('contacto')
 
@@ -290,7 +290,11 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
   if (data.date && data.time) {
     const { day, month, year } = data.date
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    openBooking('consulting', { date: dateStr, time: data.time })
+    openBooking({
+      programId: null,
+      length: 30,
+      schedule: { date: dateStr, time: data.time },
+    })
   }
 }
 </script>

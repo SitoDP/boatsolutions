@@ -77,7 +77,7 @@
         </div>
       </nav>
 
-      <button class="btn btn-primary btn-reserve" @click="openBooking('consulting')">
+      <button class="btn btn-primary btn-reserve" @click="openBooking({ programId: null, length: 30 })">
         {{ lbl.reserve }}
       </button>
 
@@ -99,9 +99,9 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 
 const route = useRoute()
 const { lang, to, switchLang, useT } = useLanguage()

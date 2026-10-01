@@ -106,7 +106,7 @@
         <div class="cta-box">
           <h2>{{ t.ctaTitle }}</h2>
           <p>{{ t.ctaText }}</p>
-          <button class="btn btn-primary btn-lg" @click="openBooking('consulting')">{{ t.ctaBtn }}</button>
+          <button class="btn btn-primary btn-lg" @click="openBooking({ programId: null, length: 30 })">{{ t.ctaBtn }}</button>
         </div>
       </div>
     </section>
@@ -117,7 +117,7 @@
 import alexImg from '../assets/alex.png'
 import calixImg from '../assets/calix.jpeg'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { usePageMeta } from '../composables/useMeta'
 
 usePageMeta({
@@ -131,7 +131,7 @@ usePageMeta({
   },
 })
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { useT } = useLanguage()
 const t = useT('nosotros')
 </script>

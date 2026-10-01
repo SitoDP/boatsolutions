@@ -9,8 +9,8 @@
       <h1 class="hero-title">{{ t.heroTitle }}</h1>
       <p class="hero-subtitle">{{ t.heroSubtitle }}</p>
       <div class="hero-buttons">
-        <button class="btn btn-primary" @click="openBooking('booking')">{{ t.heroBook }}</button>
-        <button class="btn btn-outline" @click="openBooking('consulting')">{{ t.heroConsult }}</button>
+        <button class="btn btn-primary" @click="openBooking({ programId: null, length: 30 })">{{ t.heroBook }}</button>
+        <button class="btn btn-outline" @click="openBooking({ programId: null, length: 30 })">{{ t.heroConsult }}</button>
       </div>
       <p class="hero-note">{{ t.heroNote }}</p>
     </HeroSection>
@@ -136,7 +136,7 @@
                 <span class="contact-label">{{ lang === 'en' ? 'Location' : 'Ubicación' }}:</span>
                 <span>{{ t.contactLocation }}</span>
               </div>
-              <button class="btn btn-primary btn-full" @click="openBooking('consulting')">
+              <button class="btn btn-primary btn-full" @click="openBooking({ programId: null, length: 30 })">
                 {{ t.bookBtn }}
               </button>
             </div>
@@ -151,7 +151,7 @@
 import CalendarWidget from '../components/CalendarWidget.vue'
 import HeroSection from '../components/HeroSection.vue'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { usePageMeta } from '../composables/useMeta'
 import { cdnVideo } from '../config'
 import { programs } from '../data/programs'
@@ -163,7 +163,7 @@ usePageMeta({
   en: programsI18n.en.meta.services,
 })
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { lang, to, useT } = useLanguage()
 const t = useT('home')
 const programsT = useT('programs')
@@ -179,7 +179,11 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
   if (data.date && data.time) {
     const { day, month, year } = data.date
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    openBooking('consulting', { date: dateStr, time: data.time })
+    openBooking({
+      programId: null,
+      length: 30,
+      schedule: { date: dateStr, time: data.time },
+    })
   }
 }
 </script>

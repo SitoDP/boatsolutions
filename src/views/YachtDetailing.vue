@@ -213,7 +213,7 @@ import { useCalcConfig } from '../composables/useCalcConfig'
 import CalendarWidget from '../components/CalendarWidget.vue'
 import HeroSection from '../components/HeroSection.vue'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { useDetailingRequest } from '../composables/useDetailingRequest'
 import { usePageMeta } from '../composables/useMeta'
 import { cdnVideo } from '../config'
@@ -230,7 +230,7 @@ usePageMeta({
   },
 })
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { open: openDetailingRequest } = useDetailingRequest()
 const { useT } = useLanguage()
 const t = useT('detailing')
@@ -257,7 +257,11 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
   if (data.date && data.time) {
     const { day, month, year } = data.date
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    openBooking('consulting', { date: dateStr, time: data.time })
+    openBooking({
+      programId: null,
+      length: 30,
+      schedule: { date: dateStr, time: data.time },
+    })
   }
 }
 </script>

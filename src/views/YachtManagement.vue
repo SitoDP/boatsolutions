@@ -4,7 +4,7 @@
       <p class="hero-label">{{ t.heroLabel }}</p>
       <h1 class="hero-title">{{ t.heroTitle }}</h1>
       <p class="hero-subtitle">{{ t.heroSubtitle }}</p>
-      <button class="btn btn-primary" @click="openBooking('consulting')">{{ t.heroBtn }}</button>
+      <button class="btn btn-primary" @click="openBooking({ programId: null, length: 30 })">{{ t.heroBtn }}</button>
     </HeroSection>
 
     <section class="section intro">
@@ -134,7 +134,7 @@
               </div>
             </div>
 
-            <button class="btn btn-primary" @click="openBooking('consulting')">
+            <button class="btn btn-primary" @click="openBooking({ programId: null, length: 30 })">
               {{ t.bookBtn }}
             </button>
           </div>
@@ -151,7 +151,7 @@ import { ref, computed } from 'vue'
 import CalendarWidget from '../components/CalendarWidget.vue'
 import HeroSection from '../components/HeroSection.vue'
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { usePageMeta } from '../composables/useMeta'
 import { cdnVideo } from '../config'
 
@@ -166,7 +166,7 @@ usePageMeta({
   },
 })
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { useT } = useLanguage()
 const t = useT('management')
 const tc = useT('checklist')
@@ -190,7 +190,11 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
   if (data.date && data.time) {
     const { day, month, year } = data.date
     const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
-    openBooking('consulting', { date: dateStr, time: data.time })
+    openBooking({
+      programId: null,
+      length: 30,
+      schedule: { date: dateStr, time: data.time },
+    })
   }
 }
 </script>

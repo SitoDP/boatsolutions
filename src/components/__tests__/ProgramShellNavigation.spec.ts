@@ -1,9 +1,10 @@
 // @vitest-environment jsdom
 import { mount, shallowMount } from '@vue/test-utils'
-import { beforeAll, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
 import { createMemoryHistory, createRouter, type RouteRecordRaw } from 'vue-router'
 import App from '../../App.vue'
+import { useProgramBooking } from '../../composables/useProgramBooking'
 import Footer from '../Footer.vue'
 import Header from '../Header.vue'
 import ProgramBookingModal from '../ProgramBookingModal.vue'
@@ -23,6 +24,8 @@ const programPaths = [
   '/programas/listo-para-zarpar',
 ] as const
 
+const booking = useProgramBooking()
+
 async function mountAt(component: typeof Header | typeof Footer, path: string) {
   const testRouter = createRouter({ history: createMemoryHistory(), routes })
   await testRouter.push(path)
@@ -32,6 +35,10 @@ async function mountAt(component: typeof Header | typeof Footer, path: string) {
 }
 
 describe('program shell navigation', () => {
+  beforeEach(() => {
+    booking.close()
+  })
+
   it('mounts the shared program booking modal exactly once in the app shell', async () => {
     const testRouter = createRouter({ history: createMemoryHistory(), routes })
     await testRouter.push('/')
@@ -69,6 +76,15 @@ describe('program shell navigation', () => {
     const { wrapper } = await mountAt(Header, '/programas/no-existe')
 
     expect(wrapper.get('[data-services-menu]').classes()).not.toContain('active')
+  })
+
+  it('opens the shared program booking flow from the header CTA', async () => {
+    const { wrapper } = await mountAt(Header, '/')
+
+    await wrapper.get('.btn-reserve').trigger('click')
+
+    expect(booking.isOpen.value).toBe(true)
+    expect(booking.context.value).toEqual({ programId: null, length: 30 })
   })
 
   it('uses locale-preserving English links in header and footer', async () => {

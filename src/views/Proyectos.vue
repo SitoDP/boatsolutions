@@ -51,7 +51,7 @@
       <div class="container">
         <h2>{{ t.ctaTitle }}</h2>
         <p>{{ t.ctaText }}</p>
-        <button class="btn btn-primary btn-large" @click="openBooking('consulting')">
+        <button class="btn btn-primary btn-large" @click="openBooking({ programId: null, length: 30 })">
           {{ t.ctaBtn }}
         </button>
       </div>
@@ -61,7 +61,7 @@
 
 <script setup lang="ts">
 import { useLanguage } from '../composables/useLanguage'
-import { useBooking } from '../composables/useBooking'
+import { useProgramBooking } from '../composables/useProgramBooking'
 import { usePageMeta } from '../composables/useMeta'
 
 usePageMeta({
@@ -75,7 +75,7 @@ usePageMeta({
   },
 })
 
-const { open: openBooking } = useBooking()
+const { open: openBooking } = useProgramBooking()
 const { useT } = useLanguage()
 const t = useT('proyectos')
 </script>
