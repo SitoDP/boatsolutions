@@ -42,12 +42,13 @@ const BRAND_LINE = '#e5e7eb';
 
 // Mapas de etiquetas legibles (deben coincidir con src/i18n/contacto.ts)
 const SUBJECT_LABELS = {
-  consulta:      { es: 'Consulta general',          en: 'General enquiry' },
-  presupuesto:   { es: 'Solicitar presupuesto',     en: 'Request a quote' },
-  cita:          { es: 'Agendar cita',              en: 'Schedule an appointment' },
-  traslado:      { es: 'Traslado de embarcación',   en: 'Vessel transfer' },
-  mantenimiento: { es: 'Mantenimiento',             en: 'Maintenance' },
-  otro:          { es: 'Otro',                      en: 'Other' },
+  consulta:              { es: 'Consulta general',              en: 'General enquiry' },
+  revision:              { es: 'Revisión inicial gratuita',     en: 'Free initial on-board inspection' },
+  programa_mantenimiento: { es: 'Plan Mantenimiento Delegado',   en: 'Delegated Maintenance Plan' },
+  programa_electronica:   { es: 'Plan Electrónica Asesorada',    en: 'Expert-Guided Electronics Plan' },
+  programa_limpieza:      { es: 'Plan Limpieza y Detailing',     en: 'Cleaning & Detailing Plan' },
+  programa_completo:      { es: 'Listo para Zarpar',             en: 'Ready to Cast Off' },
+  otro:                   { es: 'Otro',                          en: 'Other' },
 };
 
 const BOAT_LABELS = {

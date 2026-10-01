@@ -88,6 +88,46 @@ describe('commercial program booking migration', () => {
   })
 
   it.each([
+    {
+      path: '/',
+      subjects: [
+        ['consulta', 'Consulta general'],
+        ['revision', 'Revisión inicial gratuita'],
+        ['programa_mantenimiento', 'Plan Mantenimiento Delegado'],
+        ['programa_electronica', 'Plan Electrónica Asesorada'],
+        ['programa_limpieza', 'Plan Limpieza y Detailing'],
+        ['programa_completo', 'Listo para Zarpar'],
+        ['otro', 'Otro'],
+      ],
+    },
+    {
+      path: '/en',
+      subjects: [
+        ['consulta', 'General enquiry'],
+        ['revision', 'Free initial on-board inspection'],
+        ['programa_mantenimiento', 'Delegated Maintenance Plan'],
+        ['programa_electronica', 'Expert-Guided Electronics Plan'],
+        ['programa_limpieza', 'Cleaning & Detailing Plan'],
+        ['programa_completo', 'Ready to Cast Off'],
+        ['otro', 'Other'],
+      ],
+    },
+  ] as const)('renders only the current contact subjects at $path', async ({ path, subjects }) => {
+    await router.push(path)
+    const wrapper = mountView(Contacto)
+    const options = wrapper.findAll('#c-subject option').slice(1).map((option) => [
+      option.attributes('value'),
+      option.text(),
+    ])
+
+    expect(options).toEqual(subjects)
+    const values = options.map(([value]) => value)
+    for (const legacySubject of ['traslado', 'mantenimiento', 'presupuesto', 'cita']) {
+      expect(values).not.toContain(legacySubject)
+    }
+  })
+
+  it.each([
     ['Contact', Contacto, '.contact-info-section > .btn-outline'],
     ['Projects', Proyectos, '.btn-large'],
     ['About', Nosotros, '.btn-lg'],

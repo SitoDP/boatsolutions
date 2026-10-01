@@ -26,6 +26,23 @@ const PROGRAM_CASES = [
   ['complete', 'Listo para Zarpar', 50, 600],
 ] as const
 
+const CONTACT_SUBJECT_CASES = [
+  ['es', 'consulta', 'Consulta general'],
+  ['es', 'revision', 'Revisión inicial gratuita'],
+  ['es', 'programa_mantenimiento', 'Plan Mantenimiento Delegado'],
+  ['es', 'programa_electronica', 'Plan Electrónica Asesorada'],
+  ['es', 'programa_limpieza', 'Plan Limpieza y Detailing'],
+  ['es', 'programa_completo', 'Listo para Zarpar'],
+  ['es', 'otro', 'Otro'],
+  ['en', 'consulta', 'General enquiry'],
+  ['en', 'revision', 'Free initial on-board inspection'],
+  ['en', 'programa_mantenimiento', 'Delegated Maintenance Plan'],
+  ['en', 'programa_electronica', 'Expert-Guided Electronics Plan'],
+  ['en', 'programa_limpieza', 'Cleaning &amp; Detailing Plan'],
+  ['en', 'programa_completo', 'Ready to Cast Off'],
+  ['en', 'otro', 'Other'],
+] as const
+
 function loadWebhook() {
   const appendRow = vi.fn()
   const sendEmail = vi.fn()
@@ -90,6 +107,20 @@ function validPayload(overrides: Record<string, unknown> = {}) {
     privacyAccepted: true,
     privacyPolicyVersion: '2026-10',
     consentedAt: '2026-10-01T08:00:00.000Z',
+    ...overrides,
+  }
+}
+
+function validContactPayload(overrides: Record<string, unknown> = {}) {
+  return {
+    type: 'contacto',
+    language: 'es',
+    name: 'Ana García',
+    email: 'ana@example.com',
+    phone: '+34 600 123 123',
+    boatType: 'velero',
+    subject: 'consulta',
+    message: 'Necesito información sobre los programas.',
     ...overrides,
   }
 }
@@ -337,5 +368,35 @@ describe('program-booking webhook', () => {
     expect(row[3]).toBe('Ana García')
     expect(row[8]).toBe('Revisar el piloto automático')
     expect(row[10]).toBe('2026-10-05')
+  })
+})
+
+describe('contact webhook subjects', () => {
+  it.each(CONTACT_SUBJECT_CASES)(
+    'maps the %s subject %s to its administrative email label',
+    (language, subject, expectedLabel) => {
+      const { doPost, appendRow, sendEmail } = loadWebhook()
+
+      post(doPost, validContactPayload({ language, subject }))
+
+      expect(appendRow).toHaveBeenCalledTimes(1)
+      expect(sendEmail).toHaveBeenCalledTimes(2)
+      expect(sendEmail.mock.calls[1][3].htmlBody).toContain(expectedLabel)
+    },
+  )
+
+  it('persists an unknown subject key without injecting it into either email', () => {
+    const unknownSubject = '<img src=x onerror=alert(1)>'
+    const { doPost, appendRow, sendEmail } = loadWebhook()
+
+    post(doPost, validContactPayload({ subject: unknownSubject }))
+
+    expect(appendRow).toHaveBeenCalledTimes(1)
+    expect(appendRow.mock.calls[0][0][7]).toBe(unknownSubject)
+    expect(sendEmail).toHaveBeenCalledTimes(2)
+    for (const email of sendEmail.mock.calls) {
+      expect(email[3].htmlBody).not.toContain(unknownSubject)
+      expect(email[3].htmlBody).not.toContain('&lt;img src=x onerror=alert(1)&gt;')
+    }
   })
 })
