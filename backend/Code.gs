@@ -20,9 +20,8 @@
 // ⚙️ CONFIG
 // =============================================================
 
-// ⚠️ TESTING — volver a 'info@boat-solutions.es' antes de producción
-const NOTIFY_EMAIL = 'sitoo.suarez@gmail.com';
-const REPLY_TO = 'sitoo.suarez@gmail.com';
+const NOTIFY_EMAIL = 'info@boat-solutions.es';
+const REPLY_TO = 'info@boat-solutions.es';
 
 const BUSINESS_NAME = 'Boat Solutions';
 const BUSINESS_TAGLINE_ES = 'Servicios marinos integrales';
@@ -60,6 +59,27 @@ const BOAT_LABELS = {
   otro:      { es: 'Otro',       en: 'Other' },
 };
 
+// Fuente autoritativa para las reservas de los nuevos programas.
+// No se confía en el nombre ni en el precio enviados por el navegador.
+const PROGRAM_BOOKING_CONFIG = {
+  care: {
+    name: 'Plan Mantenimiento Delegado',
+    prices: { 30: 215, 35: 250, 40: 285, 45: 320, 50: 355 },
+  },
+  navigation: {
+    name: 'Plan Electrónica Asesorada',
+    prices: { 30: 130, 35: 150, 40: 170, 45: 190, 50: 215 },
+  },
+  ready: {
+    name: 'Plan Limpieza y Detailing',
+    prices: { 30: 85, 35: 100, 40: 115, 45: 130, 50: 145 },
+  },
+  complete: {
+    name: 'Listo para Zarpar',
+    prices: { 30: 360, 35: 420, 40: 480, 45: 540, 50: 600 },
+  },
+};
+
 // =============================================================
 // HTTP ENDPOINTS
 // =============================================================
@@ -68,12 +88,14 @@ function doPost(e) {
   try {
     const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
     const data = JSON.parse(e.postData.contents);
+    const programBooking = data.type === 'program-booking' ? normalizeProgramBooking(data) : null;
 
     const category =
       data.type === 'contacto'           ? 'Contacto' :
       data.type === 'quote'              ? 'Presupuesto' :
       data.type === 'transport-request'  ? 'Solicitud traslado' :
       data.type === 'detailing-request'  ? 'Solicitud detailing' :
+      data.type === 'program-booking'    ? 'Reserva programa' :
       data.isConsulting                  ? 'Consulta' :
                                            'Reserva';
 
@@ -88,21 +110,24 @@ function doPost(e) {
     } else if (data.type === 'detailing-request') {
       subjectCol = 'Detailing: ' + (data.levelLabel || data.level || '');
       commentsCol = 'Eslora: ' + (data.length || '') + 'm · Material: ' + (data.materialLabel || data.material || '');
+    } else if (programBooking) {
+      subjectCol = programBooking.programName + ' · hasta ' + programBooking.length + ' pies · ' + programBooking.monthlyPrice + ' €/mes · IVA incluido';
+      commentsCol = 'Programa: ' + programBooking.programId + ' · Eslora: ' + programBooking.length + ' pies · Cuota: ' + programBooking.monthlyPrice + ' €/mes · IVA incluido';
     }
 
     const row = [
       new Date(),
       data.type || '',
       category,
-      data.name || '',
-      data.email || '',
-      data.phone || '',
-      data.boatType || '',
+      programBooking ? programBooking.name : (data.name || ''),
+      programBooking ? programBooking.email : (data.email || ''),
+      programBooking ? programBooking.phone : (data.phone || ''),
+      programBooking ? programBooking.boatType : (data.boatType || ''),
       subjectCol,
-      data.message || data.specs || '',
+      data.message || data.specs || (programBooking ? programBooking.comments : ''),
       commentsCol,
-      data.date || '',
-      data.time || ''
+      programBooking ? programBooking.date : (data.date || ''),
+      programBooking ? programBooking.time : (data.time || '')
     ];
 
     sheet.appendRow(row);
@@ -121,6 +146,8 @@ function doPost(e) {
           handleTransportRequestEmails(data, lang); break;
         case 'detailing-request':
           handleDetailingRequestEmails(data, lang); break;
+        case 'program-booking':
+          handleProgramBookingEmails(programBooking, lang); break;
       }
     } catch (mailErr) {
       console.error('[' + (data.type || 'unknown') + '] email error:', mailErr);
@@ -190,6 +217,53 @@ function handleReservaEmails(data, lang) {
   });
 }
 
+function normalizeProgramBooking(data) {
+  const programId = String(data.programId || '').trim();
+  const length = Number(data.length);
+  const config = PROGRAM_BOOKING_CONFIG[programId];
+  const monthlyPrice = config && config.prices[length];
+  const name = String(data.name || '').slice(0, 200).trim();
+  const email = String(data.email || '').slice(0, 200).trim();
+  const date = String(data.date || '').trim();
+  const time = String(data.time || '').trim();
+
+  if (!config || !monthlyPrice) throw new Error('Programa o eslora no válidos');
+  if (!name || !email || !date || !time) throw new Error('Nombre, email, fecha y hora son obligatorios');
+
+  return {
+    type: 'program-booking',
+    programId: programId,
+    programName: config.name,
+    length: length,
+    monthlyPrice: monthlyPrice,
+    name: name,
+    email: email,
+    phone: String(data.phone || '').slice(0, 50).trim(),
+    boatType: String(data.boatType || '').trim(),
+    date: date,
+    time: time,
+    comments: String(data.comments || '').slice(0, 4000).trim(),
+  };
+}
+
+function handleProgramBookingEmails(data, lang) {
+  if (!data || !data.name || !data.email || !data.date || !data.time) return;
+
+  const p = Object.assign({}, data, {
+    lang: lang,
+    boatTypeLabel: (BOAT_LABELS[data.boatType] && BOAT_LABELS[data.boatType][lang]) || '',
+  });
+
+  GmailApp.sendEmail(p.email, customerSubjectFor(p), '', {
+    htmlBody: customerEmailProgramBooking(p),
+    name: BUSINESS_NAME, replyTo: REPLY_TO,
+  });
+  GmailApp.sendEmail(NOTIFY_EMAIL, adminSubjectFor(p), '', {
+    htmlBody: adminEmailProgramBooking(p),
+    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+  });
+}
+
 function handleQuoteEmails(data, lang) {
   const p = {
     type: 'quote', lang: lang,
@@ -234,6 +308,10 @@ function customerSubjectFor(p) {
     return en ? 'Quote request received — ' + BUSINESS_NAME
               : 'Hemos recibido tu solicitud de presupuesto — ' + BUSINESS_NAME;
   }
+  if (p.type === 'program-booking') {
+    return en ? 'Initial onboard review received — ' + BUSINESS_NAME
+              : 'Hemos recibido tu solicitud de revisión inicial — ' + BUSINESS_NAME;
+  }
   return BUSINESS_NAME;
 }
 
@@ -245,6 +323,9 @@ function adminSubjectFor(p) {
   }
   if (p.type === 'quote') {
     return 'Nueva solicitud de presupuesto — ' + p.name + (p.product ? ' · ' + p.product : '');
+  }
+  if (p.type === 'program-booking') {
+    return 'Nueva revisión inicial — ' + p.name + ' · ' + p.programName;
   }
   return 'Nueva solicitud — ' + p.name;
 }
@@ -387,6 +468,41 @@ function customerEmailReserva(p) {
   return emailWrap(p.lang, customerHeader(p.lang) + body + customerDisclaimer(p.lang) + customerFooter(p.lang));
 }
 
+function customerEmailProgramBooking(p) {
+  const en = p.lang === 'en';
+  const vatIncluded = en ? 'VAT included' : 'IVA incluido';
+  const greeting = (en ? 'Hi ' : 'Hola ') + escapeHtml(firstName(p.name)) + ',';
+  const intro = en
+    ? 'We have received your request for the free initial onboard review with <strong>' + BUSINESS_NAME + '</strong>.'
+    : 'Hemos recibido tu solicitud para la revisión inicial gratuita a bordo con <strong>' + BUSINESS_NAME + '</strong>.';
+  const confirm = en
+    ? "We'll confirm the requested date and time personally within <strong>24 working hours</strong>."
+    : 'Confirmaremos personalmente la fecha y la hora solicitadas en <strong>menos de 24 h laborables</strong>.';
+  const urgent = en
+    ? 'If you need to change anything, write or WhatsApp us at <strong>' + PHONE_DISPLAY + '</strong>.'
+    : 'Si necesitas cambiar algo, escríbenos o llámanos por WhatsApp al <strong>' + PHONE_DISPLAY + '</strong>.';
+
+  const summaryRows =
+    summaryRow(en ? 'Program' : 'Programa', escapeHtml(p.programName)) +
+    summaryRow(en ? 'Boat length' : 'Eslora', en ? 'Up to ' + p.length + ' ft' : 'Hasta ' + p.length + ' pies') +
+    summaryRow(en ? 'Monthly fee' : 'Cuota mensual', p.monthlyPrice + ' € ' + (en ? '/ month' : '/ mes') + ' · ' + vatIncluded) +
+    summaryRow(en ? 'Date' : 'Fecha', escapeHtml(formatDate(p.date, p.lang))) +
+    summaryRow(en ? 'Preferred time' : 'Hora preferida', escapeHtml(p.time)) +
+    (p.boatTypeLabel ? summaryRow(en ? 'Vessel' : 'Embarcación', escapeHtml(p.boatTypeLabel)) : '');
+
+  const body =
+    '<tr><td style="padding:40px 36px;">' +
+    '<h1 style="margin:0 0 18px;font-family:Georgia,serif;font-size:26px;color:' + BRAND_DARK + ';font-weight:600;">' + greeting + '</h1>' +
+    '<p style="margin:0 0 16px;font-size:16px;line-height:1.65;">' + intro + '</p>' +
+    '<p style="margin:0 0 16px;font-size:16px;line-height:1.65;">' + confirm + '</p>' +
+    summaryBox(p.lang, summaryRows) +
+    '<p style="margin:0;font-size:16px;line-height:1.65;">' + urgent + '</p>' +
+    customerSignature(p.lang) +
+    '</td></tr>';
+
+  return emailWrap(p.lang, customerHeader(p.lang) + body + customerDisclaimer(p.lang) + customerFooter(p.lang));
+}
+
 function customerEmailQuote(p) {
   const en = p.lang === 'en';
   const greeting = (en ? 'Hi ' : 'Hola ') + escapeHtml(firstName(p.name)) + ',';
@@ -503,6 +619,31 @@ function adminEmailReserva(p) {
       fields +
       (p.comments ? adminMessageBlock('Comentarios', p.comments) : '') +
       adminReplyButton(p, 'Re: Tu reserva — ' + BUSINESS_NAME) +
+    '</td></tr>' +
+    adminFooter();
+
+  return emailWrap('es', inner);
+}
+
+function adminEmailProgramBooking(p) {
+  const phoneDigits = p.phone.replace(/[^+0-9]/g, '');
+  const fields =
+    adminFieldRow('Nombre', escapeHtml(p.name)) +
+    adminFieldRow('Email', '<a href="mailto:' + escapeAttr(p.email) + '" style="color:' + BRAND_PRIMARY + ';text-decoration:none;">' + escapeHtml(p.email) + '</a>') +
+    (p.phone ? adminFieldRow('Teléfono', '<a href="tel:' + escapeAttr(phoneDigits) + '" style="color:' + BRAND_PRIMARY + ';text-decoration:none;">' + escapeHtml(p.phone) + '</a>') : '') +
+    adminFieldRow('Programa', escapeHtml(p.programName)) +
+    adminFieldRow('Eslora', 'Hasta ' + p.length + ' pies') +
+    adminFieldRow('Cuota mostrada', p.monthlyPrice + ' €/mes · IVA incluido') +
+    (p.boatTypeLabel ? adminFieldRow('Tipo de embarcación', escapeHtml(p.boatTypeLabel)) : '') +
+    adminFieldRow('Fecha preferida', escapeHtml(formatDate(p.date, 'es'))) +
+    adminFieldRow('Hora preferida', escapeHtml(p.time));
+
+  const inner =
+    adminHeader('Nueva revisión inicial', p) +
+    '<tr><td style="padding:32px;">' +
+      fields +
+      (p.comments ? adminMessageBlock('Comentarios', p.comments) : '') +
+      adminReplyButton(p, 'Re: Tu revisión inicial — ' + BUSINESS_NAME) +
     '</td></tr>' +
     adminFooter();
 

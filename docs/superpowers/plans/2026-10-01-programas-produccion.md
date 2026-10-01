@@ -19,7 +19,7 @@
 - Los cuatro programas aprobados son Mantenimiento Delegado, Electrónica Asesorada, Limpieza y Detailing y Listo para Zarpar.
 - Todos los importes visibles y enviados por correo incluyen IVA.
 - Matrices de precios por 30/35/40/45/50 pies: mantenimiento `215/250/285/320/355`, electrónica `130/150/170/190/215`, limpieza `85/100/115/130/145`, completo `360/420/480/540/600` euros al mes.
-- La promoción aprobada es una revisión inicial de una hora, valorada en 120 € IVA incluido, limitada a diez plazas, barcos de hasta 30 pies en Rías Baixas y reservas hasta el 31/10/2026.
+- La promoción aprobada es una revisión inicial de una hora, valorada en 120 € IVA incluido, limitada a diez plazas, para barcos de 30 pies o más en Rías Baixas y reservas hasta el 31/10/2026.
 - No publicar precios de pulido no confirmados.
 - Preservar la selección de programa, eslora, fecha y hora al abrir el modal.
 - Mostrar fechas al usuario como `DD/MM/AAAA`; enviar al backend `YYYY-MM-DD`.
@@ -41,8 +41,8 @@
 | Franja | Bloque | Responsable | Dependencia |
 |---|---|---|---|
 | 00:00–00:25 | Baseline, rama y corrección de pruebas existentes | Agente integrador | Ninguna |
-| 00:25–01:55 | Backend, frontend ES e i18n/legal en paralelo | 3 agentes | Baseline |
-| 01:55–02:45 | Integración de ramas/cambios y resolución de conflictos | Agente integrador | Tres bloques |
+| 00:25–01:55 | Backend y frontend ES en paralelo; preparación de traducciones sin editar código | 3 agentes | Baseline |
+| 01:55–02:45 | Router e integración; después i18n/legal sobre las vistas ya integradas | Agente integrador | Backend y frontend ES |
 | 02:45–03:15 | Despliegue manual de Apps Script y prueba real | Usuario + agente | Backend integrado |
 | 03:15–04:15 | QA responsive, accesibilidad, rutas y regresión | 2 agentes | Aplicación integrada |
 | 04:15–04:45 | Push, GitHub Pages, smoke test y rollback preparado | Agente integrador | Todo verde |
