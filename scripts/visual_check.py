@@ -116,6 +116,31 @@ def check_prices(page: Page) -> None:
     assert updated == ["355", "215", "145", "600"], updated
 
 
+def check_home_program_layout(page: Page) -> None:
+    page.set_viewport_size({"width": 1440, "height": 900})
+    open_page(page, "/")
+    layout = page.evaluate(
+        """() => {
+          const grid = document.querySelector('.services-grid');
+          const cards = [...document.querySelectorAll('[data-home-program]')];
+          const complete = document.querySelector('[data-program-id="complete"]');
+          if (!grid || cards.length !== 4 || !complete) return null;
+          const gridBox = grid.getBoundingClientRect();
+          const completeBox = complete.getBoundingClientRect();
+          return {
+            gridWidth: gridBox.width,
+            completeWidth: completeBox.width,
+            completeHeight: completeBox.height,
+            wideCards: cards.filter((card) => card.classList.contains('service-card--wide')).length,
+          };
+        }"""
+    )
+    assert layout is not None
+    assert layout["wideCards"] == 1, layout
+    assert abs(layout["gridWidth"] - layout["completeWidth"]) <= 2, layout
+    assert layout["completeHeight"] <= 450, layout
+
+
 def check_detail_and_modal(page: Page) -> None:
     page.set_viewport_size({"width": 1440, "height": 900})
     open_page(page, "/programas/electronica-asesorada")
@@ -234,6 +259,7 @@ def main() -> None:
                 failures.append(f"{path}: {error}")
 
         try:
+            check_home_program_layout(page)
             check_prices(page)
             check_detail_and_modal(page)
             check_english_mobile_labels(page)

@@ -116,6 +116,15 @@ describe('Home program catalog', () => {
     expect(wrapper.text()).not.toMatch(/Soluciones a medida|Realce estético|Traslados/)
   })
 
+  it('marks only the complete program to span the full second row', async () => {
+    const wrapper = await visit('/')
+    const cards = wrapper.findAll('[data-home-program]')
+    const completeCard = wrapper.get('[data-home-program][data-program-id="complete"]')
+
+    expect(completeCard.classes()).toContain('service-card--wide')
+    expect(cards.filter((card) => card.classes().includes('service-card--wide'))).toHaveLength(1)
+  })
+
   it.each([
     {
       path: '/' as const,

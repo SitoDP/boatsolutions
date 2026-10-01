@@ -25,6 +25,7 @@
             v-for="program in programs"
             :key="program.id"
             class="service-card"
+            :class="{ 'service-card--wide': program.id === 'complete' }"
             data-home-program
             :data-program-id="program.id"
           >
@@ -235,7 +236,7 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
 /* ── Servicios ── */
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 32px;
 }
 
@@ -250,6 +251,21 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
 .service-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 16px 48px rgba(0, 0, 0, 0.12);
+}
+
+.service-card--wide {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.4fr);
+}
+
+.service-card--wide .service-img-wrap {
+  height: 320px;
+}
+
+.service-card--wide .service-body {
+  align-self: center;
+  padding: clamp(32px, 5vw, 56px);
 }
 
 .service-img-wrap {
@@ -436,6 +452,10 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
 
 @media (max-width: 768px) {
   .hero-title { font-size: 2rem; }
+
+  .services-grid { grid-template-columns: 1fr; }
+  .service-card--wide { display: block; }
+  .service-card--wide .service-img-wrap { height: 220px; min-height: 0; }
 
   .project-card { grid-template-columns: 1fr; gap: 24px; }
   .project-card.reverse { direction: ltr; }
