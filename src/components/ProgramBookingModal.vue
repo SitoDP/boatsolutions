@@ -65,7 +65,9 @@ function resetForm() {
   form.boatType = ''
   form.comments = ''
   form.privacyAccepted = false
-  schedule.value = { date: null, time: null }
+  schedule.value = booking.context.value.schedule
+    ? { ...booking.context.value.schedule }
+    : { date: null, time: null }
   submittedData.value = null
   success.value = false
   isSubmitting.value = false

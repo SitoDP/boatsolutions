@@ -35,6 +35,22 @@ describe('program booking flow', () => {
     expect(booking.isOpen.value).toBe(true)
   })
 
+  it('prefills the calendar while leaving the program selectable', () => {
+    booking.open({
+      programId: null,
+      length: 30,
+      schedule: { date: '2026-10-05', time: '10:00' },
+    })
+    const wrapper = mount(ProgramBookingModal, {
+      props: { today },
+      global: { plugins: [router], stubs: { Teleport: true } },
+    })
+
+    expect(wrapper.get('[data-date="2026-10-05"]').attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get('[data-time="10:00"]').attributes('aria-pressed')).toBe('true')
+    expect((wrapper.get('#booking-program').element as HTMLSelectElement).value).toBe('')
+  })
+
   it('enforces weekdays and the 90-day window while emitting ISO date and time', async () => {
     const wrapper = mount(ProgramBookingCalendar, {
       props: { modelValue: { date: '2026-09-30', time: '10:00' }, today },

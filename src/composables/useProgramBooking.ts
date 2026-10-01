@@ -6,7 +6,10 @@ const context = ref<BookingContext>({ programId: null, length: 30 })
 
 export function useProgramBooking() {
   function open(nextContext: BookingContext) {
-    context.value = { ...nextContext }
+    context.value = {
+      ...nextContext,
+      ...(nextContext.schedule ? { schedule: { ...nextContext.schedule } } : {}),
+    }
     isOpen.value = true
   }
 

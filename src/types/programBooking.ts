@@ -3,6 +3,7 @@ import type { BoatLength, ProgramId } from '../data/programs'
 export interface BookingContext {
   programId: ProgramId | null
   length: BoatLength
+  schedule?: CalendarSelection
 }
 
 export interface CalendarSelection {
