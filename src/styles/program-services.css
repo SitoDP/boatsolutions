@@ -11,19 +11,19 @@
   text-underline-offset: 4px;
 }
 
-.program-conditions {
+.program-card-conditions {
   margin: 10px 0 0;
   color: #5b6c78;
   font-size: .72rem;
   line-height: 1.45;
 }
 
-.featured .program-conditions {
+.featured .program-card-conditions {
   color: rgba(255, 255, 255, .76);
 }
 
 .program-additional {
-  margin: -10px 0 26px;
+  margin: 0 0 26px;
   padding-left: 12px;
   border-left: 2px solid var(--teak);
   color: #5b6c78;

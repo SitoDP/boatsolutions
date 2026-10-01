@@ -63,8 +63,48 @@ def assert_layout(page: Page, path: str) -> None:
 
 
 def check_prices(page: Page) -> None:
+    page.set_viewport_size({"width": 1440, "height": 900})
     open_page(page, "/servicios")
+    hero_layout = page.evaluate(
+        """() => {
+          const header = document.querySelector('header');
+          const hero = document.querySelector('.hero-section');
+          const caption = document.querySelector('.hero-caption');
+          const promotion = document.querySelector('.inspection-banner');
+          if (!header || !hero || !caption || !promotion) return null;
+          return {
+            headerBottom: header.getBoundingClientRect().bottom,
+            heroTop: hero.getBoundingClientRect().top,
+            heroHeight: hero.getBoundingClientRect().height,
+            captionBottom: caption.getBoundingClientRect().bottom,
+            promotionTop: promotion.getBoundingClientRect().top,
+          };
+        }"""
+    )
+    assert hero_layout is not None
+    assert hero_layout["heroTop"] >= hero_layout["headerBottom"], hero_layout
+    assert hero_layout["heroHeight"] <= 760, hero_layout
+    assert hero_layout["captionBottom"] <= hero_layout["promotionTop"] - 8, hero_layout
+
     assert page.locator("[data-program]").count() == 4
+    card_layout = page.evaluate(
+        """() => {
+          const cards = [...document.querySelectorAll('.program-card:not(.featured)')];
+          const actionBottoms = cards.map((card) =>
+            card.querySelector('.card-actions')?.getBoundingClientRect().bottom || 0
+          );
+          const ready = document.querySelector('[data-program="ready"]');
+          const conditions = ready?.querySelector('.program-card-conditions')?.getBoundingClientRect();
+          const note = ready?.querySelector('.program-hours-note')?.getBoundingClientRect();
+          return {
+            actionBottoms,
+            noteGap: conditions && note ? note.top - conditions.bottom : null,
+          };
+        }"""
+    )
+    assert max(card_layout["actionBottoms"]) - min(card_layout["actionBottoms"]) <= 2, card_layout
+    assert card_layout["noteGap"] is not None and card_layout["noteGap"] >= 4, card_layout
+
     initial = page.locator("[data-program]").evaluate_all(
         "els => els.map((el) => el.getAttribute('data-price'))"
     )
@@ -77,7 +117,35 @@ def check_prices(page: Page) -> None:
 
 
 def check_detail_and_modal(page: Page) -> None:
+    page.set_viewport_size({"width": 1440, "height": 900})
     open_page(page, "/programas/electronica-asesorada")
+
+    layout = page.evaluate(
+        """() => {
+          const surface = document.querySelector('.detail-page');
+          const hero = document.querySelector('.detail-hero');
+          const problem = document.querySelector('.detail-problem');
+          if (!surface || !hero || !problem) return null;
+          const surfaceBox = surface.getBoundingClientRect();
+          const heroBox = hero.getBoundingClientRect();
+          const problemStyle = getComputedStyle(problem);
+          return {
+            surfaceWidth: surfaceBox.width,
+            surfaceLeft: surfaceBox.left,
+            headerBottom: document.querySelector('header')?.getBoundingClientRect().bottom || 0,
+            heroTop: heroBox.top,
+            heroHeight: heroBox.height,
+            problemPaddingLeft: parseFloat(problemStyle.paddingLeft),
+          };
+        }"""
+    )
+    assert layout is not None
+    assert layout["surfaceWidth"] <= 1240, layout
+    assert layout["surfaceLeft"] >= 24, layout
+    assert layout["heroTop"] >= layout["headerBottom"], layout
+    assert layout["heroHeight"] <= 760, layout
+    assert layout["problemPaddingLeft"] >= 40, layout
+
     page.locator('[data-detail-conditions] [data-length="50"]').click()
     assert page.locator("[data-detail-price]").inner_text().strip() == "215 €"
     assert page.locator("[data-legal-review]").count() == 0

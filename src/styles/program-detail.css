@@ -1,18 +1,18 @@
 @scope (.programs-surface) {
-.detail-page-real {
-  --detail-section-space: clamp(4.5rem, 9vw, 7.5rem);
+:scope.detail-page-real {
+  --detail-section-space: clamp(4rem, 7vw, 6rem);
 }
 
-.detail-page-real h1,
-.detail-page-real h2,
-.detail-page-real h3,
-.detail-page-real p,
-.detail-page-real li,
-.detail-page-real a {
+:scope.detail-page-real h1,
+:scope.detail-page-real h2,
+:scope.detail-page-real h3,
+:scope.detail-page-real p,
+:scope.detail-page-real li,
+:scope.detail-page-real a {
   overflow-wrap: anywhere;
 }
 
-.detail-page-real .detail-subtitle {
+:scope.detail-page-real .detail-subtitle {
   max-width: 42rem;
   margin: 0 0 2rem;
   color: #d8e4eb;
@@ -52,8 +52,8 @@
   line-height: 1.8;
 }
 
-.detail-page-real .detail-fit ul,
-.detail-page-real .detail-list-section ul,
+:scope.detail-page-real .detail-fit ul,
+:scope.detail-page-real .detail-list-section ul,
 .program-conditions ul {
   margin: 1.75rem 0 0;
   padding-left: 1.2rem;
@@ -61,7 +61,7 @@
   line-height: 1.75;
 }
 
-.detail-page-real li + li {
+:scope.detail-page-real li + li {
   margin-top: .75rem;
 }
 
@@ -240,10 +240,10 @@
 }
 
 @media (max-width: 1024px) {
-  .detail-page-real .detail-hero,
+  :scope.detail-page-real .detail-hero,
   .detail-problem,
-  .detail-page-real .detail-fit,
-  .detail-page-real .detail-included,
+  :scope.detail-page-real .detail-fit,
+  :scope.detail-page-real .detail-included,
   .detail-list-section,
   .detail-case,
   .detail-workflow-grid,
@@ -258,7 +258,7 @@
 }
 
 @media (max-width: 640px) {
-  .detail-page-real {
+  :scope.detail-page-real {
     width: min(100% - 1rem, 1180px);
   }
 

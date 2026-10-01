@@ -19,6 +19,7 @@
   margin: 0;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  padding-top: 66px;
 }
 
 * { box-sizing: border-box; }
@@ -28,6 +29,8 @@ button, a { font: inherit; }
 a { color: inherit; }
 
 img { display: block; max-width: 100%; }
+
+[id] { scroll-margin-top: 88px; }
 
 button:focus-visible,
 a:focus-visible {
@@ -108,15 +111,15 @@ a:focus-visible {
 }
 
 /* Program detail pages */
-.detail-page {
+:scope.detail-page {
   --detail-accent: var(--ocean);
   width: min(1240px, calc(100% - 48px));
   margin: 0 auto;
 }
 
-.detail-navigation { --detail-accent: #477fa0; }
-.detail-ready { --detail-accent: #708b83; }
-.detail-complete { --detail-accent: #b98a5d; }
+:scope.detail-navigation { --detail-accent: #477fa0; }
+:scope.detail-ready { --detail-accent: #708b83; }
+:scope.detail-complete { --detail-accent: #b98a5d; }
 
 .detail-hero {
   display: grid;
@@ -152,7 +155,7 @@ a:focus-visible {
   overflow-wrap: anywhere;
 }
 
-.detail-care .detail-hero h1 {
+:scope.detail-care .detail-hero h1 {
   font-size: clamp(2.8rem, 3.75vw, 4.15rem);
 }
 
@@ -166,8 +169,8 @@ a:focus-visible {
 
 .detail-hero-visual { position: relative; min-height: 620px; overflow: hidden; }
 .detail-hero-visual::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(32,59,80,.28), transparent 40%); }
-.detail-hero-visual img { width: 100%; height: 100%; object-fit: cover; }
-.detail-complete .detail-hero-visual img { object-position: center; }
+.detail-hero-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+:scope.detail-complete .detail-hero-visual img { object-position: center; }
 
 .detail-marker {
   position: absolute;
@@ -356,12 +359,12 @@ a:focus-visible {
   inset: 0;
   background: linear-gradient(90deg, rgba(32, 59, 80, 0.38), transparent 34%), linear-gradient(0deg, rgba(13, 20, 26, 0.58), transparent 40%);
 }
-.hero-visual img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 68%; }
+.hero-visual img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 68%; }
 .hero-caption {
   position: absolute;
   z-index: 1;
   right: 38px;
-  bottom: 36px;
+  bottom: 56px;
   width: min(310px, calc(100% - 76px));
   padding-left: 18px;
   border-left: 2px solid var(--white);
@@ -451,6 +454,8 @@ a:focus-visible {
   border: 1px solid var(--line);
   background: var(--white);
 }
+.program-card:not(.featured) { display: flex; flex-direction: column; }
+.program-card:not(.featured) .card-actions { margin-top: auto; }
 .program-card.featured {
   margin-top: 16px;
   padding: 40px;
@@ -478,7 +483,7 @@ a:focus-visible {
 .card-actions { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
 .card-cta { display: inline-block; color: var(--ocean-deep); font: 600 0.78rem 'Montserrat', sans-serif; text-underline-offset: 6px; }
 .card-booking { padding: 10px 13px; border: 1px solid var(--ocean-deep); background: transparent; color: var(--ocean-deep); font: 600 .72rem 'Montserrat', sans-serif; cursor: pointer; }
-.program-hours-note { margin: -14px 0 22px; color: #52616c; font-size: .72rem; line-height: 1.5; }
+.program-hours-note { margin: 6px 0 22px; color: #52616c; font-size: .72rem; line-height: 1.5; }
 .featured .program-category, .featured .price-prefix, .featured .price-period { color: var(--sea-glass); }
 .featured-intro { grid-area: intro; min-width: 0; }
 .featured-intro h3 { max-width: 620px; font-size: clamp(2rem, 3.35vw, 3.35rem); line-height: 1; }
@@ -588,6 +593,7 @@ footer {
   .program-card:not(.featured) .price-block { border-top: 0; }
   .program-card:not(.featured) ul { margin: 0; }
   .program-card:not(.featured) .card-cta { grid-column: 1; }
+  .program-card:not(.featured) .card-actions { margin-top: 0; }
   .program-card.featured {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -647,7 +653,7 @@ footer {
   .contact-section { padding: 76px 24px; }
   .app-header .header-cta { display: none; }
   .primary-nav.open { grid-template-columns: 1fr; }
-  .detail-page { width: min(100% - 28px, 1180px); }
+  :scope.detail-page { width: min(100% - 28px, 1180px); }
   .detail-hero-copy { min-height: 520px; padding: 54px 26px; }
   .back-link { margin-bottom: 44px; }
   .detail-hero h1 { font-size: clamp(2.8rem, 14vw, 4.5rem); }

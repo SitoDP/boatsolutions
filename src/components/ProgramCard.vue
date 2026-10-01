@@ -57,7 +57,7 @@ function text(template: string, values: Record<string, string | number>) {
           <strong>{{ program.prices[length] }} €</strong>
           <span class="price-period">{{ t.card.perMonth }}</span>
         </div>
-        <p class="program-conditions">
+        <p class="program-card-conditions">
           {{ text(t.card.hoursAvailable, { hours: hours(program.includedHours[length]) }) }}
         </p>
         <p v-if="savings" class="savings" data-savings>
@@ -100,7 +100,7 @@ function text(template: string, values: Record<string, string | number>) {
         <strong>{{ program.prices[length] }} €</strong>
         <span class="price-period">{{ t.card.perMonth }}</span>
       </div>
-      <p class="program-conditions">
+      <p class="program-card-conditions">
         {{ text(t.card.hoursAvailable, { hours: hours(program.includedHours[length]) }) }}
       </p>
       <p v-if="copy.hoursNote" class="program-hours-note" data-program-hours-note>
