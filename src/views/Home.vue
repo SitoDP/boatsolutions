@@ -17,43 +17,34 @@
 
     <section id="servicios" class="section services">
       <div class="container">
-        <h2 class="section-title">{{ t.servicesTitle }}</h2>
-        <p class="section-subtitle">{{ t.servicesSubtitle }}</p>
+        <h2 class="section-title">{{ t.programsTitle }}</h2>
+        <p class="section-subtitle">{{ t.programsSubtitle }}</p>
 
         <div class="services-grid">
-          <div class="service-card">
+          <article
+            v-for="program in programs"
+            :key="program.id"
+            class="service-card"
+            data-home-program
+            :data-program-id="program.id"
+          >
             <div class="service-img-wrap">
-              <img src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=600,fit=crop/AMqDOgByPghjN30x/img_3592-mp84x25VeJCLqWJL.JPG" alt="Soluciones a medida" loading="lazy" />
+              <img
+                :src="programVisuals[program.id].src"
+                :alt="programsT.programs[program.id].imageAlt"
+                :width="programVisuals[program.id].width"
+                :height="programVisuals[program.id].height"
+                loading="lazy"
+              />
             </div>
             <div class="service-body">
-              <h3>{{ t.service1Title }}</h3>
-              <p>{{ t.service1Desc }}</p>
-              <button class="btn btn-outline" @click="openBooking('consulting')">{{ t.service1Btn }}</button>
+              <h3>{{ programsT.programs[program.id].name }}</h3>
+              <p>{{ programsT.programs[program.id].description }}</p>
+              <router-link :to="to('/programas/' + program.slug)" class="btn btn-outline">
+                {{ program.id === 'complete' ? programsT.card.viewComplete : programsT.card.view }}
+              </router-link>
             </div>
-          </div>
-
-          <div class="service-card">
-            <div class="service-img-wrap">
-              <img src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=600,fit=crop/AMqDOgByPghjN30x/pulir-baiona-m5K8N07gwlSrDxWn.png" alt="Realce estetico" loading="lazy" />
-            </div>
-            <div class="service-body">
-              <h3>{{ t.service2Title }}</h3>
-              <p>{{ t.service2Desc }}</p>
-              <button class="btn btn-outline" @click="openBooking('consulting')">{{ t.service2Btn }}</button>
-              <span class="service-note">{{ t.service2Note }}</span>
-            </div>
-          </div>
-
-          <div class="service-card">
-            <div class="service-img-wrap">
-              <img src="https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=600,fit=crop/AMqDOgByPghjN30x/img_20220420_090516-yYEsKX76VSkhJu6A.jpg" alt="Traslados" loading="lazy" />
-            </div>
-            <div class="service-body">
-              <h3>{{ t.service3Title }}</h3>
-              <p>{{ t.service3Desc }}</p>
-              <button class="btn btn-outline" @click="openBooking('consulting')">{{ t.service3Btn }}</button>
-            </div>
-          </div>
+          </article>
         </div>
       </div>
     </section>
@@ -163,21 +154,19 @@ import { useLanguage } from '../composables/useLanguage'
 import { useBooking } from '../composables/useBooking'
 import { usePageMeta } from '../composables/useMeta'
 import { cdnVideo } from '../config'
+import { programs } from '../data/programs'
+import { programVisuals } from '../data/programVisuals'
+import { programsI18n } from '../i18n/programs'
 
 usePageMeta({
-  es: {
-    title: 'Gestión, mantenimiento y traslado de barcos',
-    description: 'Boat Solutions International acompaña al armador desde la idea hasta la botadura. Consultoría, gestión integral, detailing y traslados náuticos.',
-  },
-  en: {
-    title: 'Yacht management, maintenance and transport',
-    description: 'Boat Solutions International supports yacht owners from concept to launch. Consulting, integral management, detailing and nautical transport.',
-  },
+  es: programsI18n.es.meta.services,
+  en: programsI18n.en.meta.services,
 })
 
 const { open: openBooking } = useBooking()
-const { lang, useT } = useLanguage()
+const { lang, to, useT } = useLanguage()
 const t = useT('home')
+const programsT = useT('programs')
 
 const galleryImages = [
   { src: 'https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=600,fit=crop/AMqDOgByPghjN30x/dji_0773-mk34eQ2g2ZUekG6R.JPG', alt: 'Vista aerea de yate' },
@@ -291,15 +280,6 @@ const handleDateSelect = (data: { date: { day: number; month: number; year: numb
   margin-bottom: 20px;
   line-height: 1.7;
   font-size: 0.95rem;
-}
-
-.service-note {
-  display: block;
-  margin-top: 10px;
-  font-size: 0.8rem;
-  color: var(--color-success);
-  font-weight: 500;
-  font-family: var(--font-heading);
 }
 
 /* ── Proyectos ── */
