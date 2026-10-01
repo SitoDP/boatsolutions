@@ -42,3 +42,6 @@ dist-ssr
 
 # Local QA evidence
 artifacts/
+
+# Isolated implementation worktrees
+.worktrees/
