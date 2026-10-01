@@ -22,6 +22,7 @@
 
 const NOTIFY_EMAIL = 'info@boat-solutions.es';
 const REPLY_TO = 'info@boat-solutions.es';
+const FROM_EMAIL = 'info@boat-solutions.es';
 
 const BUSINESS_NAME = 'Boat Solutions';
 const BUSINESS_TAGLINE_ES = 'Servicios marinos integrales';
@@ -191,11 +192,11 @@ function handleContactoEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubjectFor(p), '', {
     htmlBody: customerEmailContacto(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubjectFor(p), '', {
     htmlBody: adminEmailContacto(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 
@@ -216,11 +217,11 @@ function handleReservaEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubjectFor(p), '', {
     htmlBody: customerEmailReserva(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubjectFor(p), '', {
     htmlBody: adminEmailReserva(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 
@@ -327,11 +328,11 @@ function handleProgramBookingEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubjectFor(p), '', {
     htmlBody: customerEmailProgramBooking(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubjectFor(p), '', {
     htmlBody: adminEmailProgramBooking(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 
@@ -349,11 +350,11 @@ function handleQuoteEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubjectFor(p), '', {
     htmlBody: customerEmailQuote(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubjectFor(p), '', {
     htmlBody: adminEmailQuote(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 
@@ -777,11 +778,11 @@ function handleTransportRequestEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubject, '', {
     htmlBody: customerEmailTransport(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubject, '', {
     htmlBody: adminEmailTransport(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 
@@ -877,11 +878,11 @@ function handleDetailingRequestEmails(data, lang) {
 
   GmailApp.sendEmail(p.email, customerSubject, '', {
     htmlBody: customerEmailDetailing(p),
-    name: BUSINESS_NAME, replyTo: REPLY_TO,
+    name: BUSINESS_NAME, from: FROM_EMAIL, replyTo: REPLY_TO,
   });
   GmailApp.sendEmail(NOTIFY_EMAIL, adminSubject, '', {
     htmlBody: adminEmailDetailing(p),
-    name: BUSINESS_NAME + ' (web)', replyTo: p.email,
+    name: BUSINESS_NAME + ' (web)', from: FROM_EMAIL, replyTo: p.email,
   });
 }
 

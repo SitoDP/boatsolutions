@@ -400,3 +400,35 @@ describe('contact webhook subjects', () => {
     }
   })
 })
+
+describe('email sender identity', () => {
+  it.each([
+    ['contacto', validContactPayload()],
+    ['reserva', { type: 'reserva', name: 'Ana García', email: 'ana@example.com' }],
+    ['quote', { type: 'quote', name: 'Ana García', email: 'ana@example.com' }],
+    ['transport-request', {
+      type: 'transport-request',
+      name: 'Ana García',
+      email: 'ana@example.com',
+      originLabel: 'Vigo',
+      destinationLabel: 'Baiona',
+    }],
+    ['detailing-request', {
+      type: 'detailing-request',
+      name: 'Ana García',
+      email: 'ana@example.com',
+      level: 'completo',
+    }],
+    ['program-booking', validPayload()],
+  ])('sends both %s emails from the verified Boat Solutions alias', (_type, payload) => {
+    const { doPost, sendEmail } = loadWebhook()
+
+    post(doPost, payload)
+
+    expect(sendEmail).toHaveBeenCalledTimes(2)
+    expect(sendEmail.mock.calls.map((call) => call[3].from)).toEqual([
+      'info@boat-solutions.es',
+      'info@boat-solutions.es',
+    ])
+  })
+})
