@@ -7,7 +7,7 @@ revisar cambios y trackearlos en git.
 
 ## Qué hace
 
-- Recibe `POST` desde la web (BookingModal, QuoteModal, Contacto…).
+- Recibe `POST` desde los formularios vigentes de la web: `ProgramBookingModal` y `Contacto`.
 - Guarda cada envío como una fila en la hoja activa.
 - Para los tipos reconocidos, incluido `program-booking`, dispara dos correos automáticos HTML branded:
   - Confirmación al cliente.
@@ -16,6 +16,8 @@ revisar cambios y trackearlos en git.
 - Los nombres localizados ES/EN y los precios de programa se resuelven en el servidor; los valores enviados por el cliente se ignoran.
 - Las cuotas de los programas incluyen IVA y así se indica en la hoja y en ambos correos.
 - Antes de escribir en Sheets, cualquier string que pueda interpretarse como fórmula (`=`, `+`, `-` o `@`, incluso tras espacios iniciales) se neutraliza con un apóstrofo. Los valores normales y los objetos `Date` no se modifican.
+
+Los handlers de reserva genérica, traslado y detailing se conservan únicamente por compatibilidad histórica con posibles clientes o formularios antiguos. Ya no representan formularios vigentes de la web pública.
 
 ## Contrato de columnas en Sheets
 

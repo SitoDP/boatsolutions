@@ -194,12 +194,19 @@ def check_english_mobile_labels(page: Page) -> None:
 
 def check_redirects(page: Page) -> None:
     redirects = {
+        "/programas/barco-sin-preocupaciones": "/programas/mantenimiento-delegado",
+        "/programas/navega-seguro": "/programas/electronica-asesorada",
+        "/programas/zarpa-cuando-quieras": "/programas/listo-para-zarpar",
         "/yacht-management": "/programas/mantenimiento-delegado",
         "/yacht-detailing": "/programas/limpieza-detailing",
         "/yacht-consulting": "/servicios",
         "/yacht-logistics": "/servicios",
-        "/programas/zarpa-cuando-quieras": "/programas/listo-para-zarpar",
+        "/en/programas/barco-sin-preocupaciones": "/en/programas/mantenimiento-delegado",
+        "/en/programas/navega-seguro": "/en/programas/electronica-asesorada",
+        "/en/programas/zarpa-cuando-quieras": "/en/programas/listo-para-zarpar",
         "/en/yacht-management": "/en/programas/mantenimiento-delegado",
+        "/en/yacht-detailing": "/en/programas/limpieza-detailing",
+        "/en/yacht-consulting": "/en/servicios",
         "/en/yacht-logistics": "/en/servicios",
     }
     for source, destination in redirects.items():
