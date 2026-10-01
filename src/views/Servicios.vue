@@ -22,8 +22,8 @@ const individualPrograms = computed(() => programs.filter((program) => !program.
 const completeProgram = computed(() => programs.find((program) => program.highlighted)!)
 const savings = computed(() => calculateBundleSavings(selectedLength.value))
 const promotionDeadline = computed(() => new Intl.DateTimeFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', {
-  day: 'numeric',
-  month: 'long',
+  day: '2-digit',
+  month: '2-digit',
   year: 'numeric',
   timeZone: 'UTC',
 }).format(new Date(`${freeInspectionPromotion.bookingDeadline}T00:00:00Z`)))
@@ -144,6 +144,7 @@ const comparisonRows = computed(() => [
             v-for="(value, index) in row.values"
             :key="index"
             role="cell"
+            :data-program-label="t.programs[programs[index].id].name"
             :class="{ included: value === t.comparison.included }"
           >
             {{ value }}

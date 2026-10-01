@@ -63,22 +63,25 @@ const BOAT_LABELS = {
 // No se confía en el nombre ni en el precio enviados por el navegador.
 const PROGRAM_BOOKING_CONFIG = {
   care: {
-    name: 'Plan Mantenimiento Delegado',
+    names: { es: 'Plan Mantenimiento Delegado', en: 'Delegated Maintenance Plan' },
     prices: { 30: 215, 35: 250, 40: 285, 45: 320, 50: 355 },
   },
   navigation: {
-    name: 'Plan Electrónica Asesorada',
+    names: { es: 'Plan Electrónica Asesorada', en: 'Expert-Guided Electronics Plan' },
     prices: { 30: 130, 35: 150, 40: 170, 45: 190, 50: 215 },
   },
   ready: {
-    name: 'Plan Limpieza y Detailing',
+    names: { es: 'Plan Limpieza y Detailing', en: 'Cleaning & Detailing Plan' },
     prices: { 30: 85, 35: 100, 40: 115, 45: 130, 50: 145 },
   },
   complete: {
-    name: 'Listo para Zarpar',
+    names: { es: 'Listo para Zarpar', en: 'Ready to Cast Off' },
     prices: { 30: 360, 35: 420, 40: 480, 45: 540, 50: 600 },
   },
 };
+
+const PROGRAM_BOOKING_TIMES = ['09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'];
+const PRIVACY_POLICY_VERSION = '2026-10';
 
 // =============================================================
 // HTTP ENDPOINTS
@@ -127,10 +130,13 @@ function doPost(e) {
       data.message || data.specs || (programBooking ? programBooking.comments : ''),
       commentsCol,
       programBooking ? programBooking.date : (data.date || ''),
-      programBooking ? programBooking.time : (data.time || '')
+      programBooking ? programBooking.time : (data.time || ''),
+      programBooking ? programBooking.privacyAccepted : '',
+      programBooking ? programBooking.privacyPolicyVersion : '',
+      programBooking ? programBooking.consentedAt : ''
     ];
 
-    sheet.appendRow(row);
+    sheet.appendRow(row.map(neutralizeSheetFormula));
 
     // Disparo de emails. Si fallan, la fila ya está guardada.
     try {
@@ -217,23 +223,31 @@ function handleReservaEmails(data, lang) {
   });
 }
 
-function normalizeProgramBooking(data) {
+function normalizeProgramBooking(data, now) {
   const programId = String(data.programId || '').trim();
   const length = Number(data.length);
   const config = PROGRAM_BOOKING_CONFIG[programId];
   const monthlyPrice = config && config.prices[length];
+  const lang = data.language === 'en' ? 'en' : 'es';
   const name = String(data.name || '').slice(0, 200).trim();
   const email = String(data.email || '').slice(0, 200).trim();
   const date = String(data.date || '').trim();
   const time = String(data.time || '').trim();
+  const consentedAt = data.consentedAt;
 
   if (!config || !monthlyPrice) throw new Error('Programa o eslora no válidos');
   if (!name || !email || !date || !time) throw new Error('Nombre, email, fecha y hora son obligatorios');
+  if (!isValidEmail(email)) throw new Error('Email no válido');
+  validateProgramBookingDate(date, now || new Date());
+  if (PROGRAM_BOOKING_TIMES.indexOf(time) === -1) throw new Error('Hora no válida');
+  if (data.privacyAccepted !== true || data.privacyPolicyVersion !== PRIVACY_POLICY_VERSION || !isValidIsoTimestamp(consentedAt)) {
+    throw new Error('Consentimiento de privacidad no válido');
+  }
 
   return {
     type: 'program-booking',
     programId: programId,
-    programName: config.name,
+    programName: config.names[lang],
     length: length,
     monthlyPrice: monthlyPrice,
     name: name,
@@ -243,7 +257,63 @@ function normalizeProgramBooking(data) {
     date: date,
     time: time,
     comments: String(data.comments || '').slice(0, 4000).trim(),
+    privacyAccepted: true,
+    privacyPolicyVersion: PRIVACY_POLICY_VERSION,
+    consentedAt: consentedAt,
   };
+}
+
+function isValidEmail(email) {
+  if (email.length > 254) return false;
+  const parts = email.split('@');
+  if (parts.length !== 2) return false;
+
+  const local = parts[0];
+  const domain = parts[1];
+  if (!local || local.length > 64 || local.charAt(0) === '.' || local.charAt(local.length - 1) === '.' || local.indexOf('..') !== -1) return false;
+  if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+$/.test(local)) return false;
+
+  const labels = domain.split('.');
+  if (labels.length < 2) return false;
+  return labels.every(function(label) {
+    return /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?$/.test(label);
+  });
+}
+
+function validateProgramBookingDate(date, now) {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(date);
+  if (!match) throw new Error('Fecha no válida');
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const bookingUtc = Date.UTC(year, month - 1, day);
+  const bookingDate = new Date(bookingUtc);
+  if (bookingDate.getUTCFullYear() !== year || bookingDate.getUTCMonth() !== month - 1 || bookingDate.getUTCDate() !== day) {
+    throw new Error('Fecha no válida');
+  }
+
+  const weekday = bookingDate.getUTCDay();
+  if (weekday === 0 || weekday === 6) throw new Error('La fecha debe ser de lunes a viernes');
+
+  const todayParts = Utilities.formatDate(now, TIMEZONE, 'yyyy-MM-dd').split('-');
+  const todayUtc = Date.UTC(Number(todayParts[0]), Number(todayParts[1]) - 1, Number(todayParts[2]));
+  const daysAhead = (bookingUtc - todayUtc) / 86400000;
+  if (daysAhead < 0 || daysAhead > 90) throw new Error('La fecha debe estar entre hoy y los próximos 90 días');
+}
+
+function isValidIsoTimestamp(value) {
+  if (typeof value !== 'string') return false;
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.exec(value);
+  if (!match) return false;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const calendarDate = new Date(Date.UTC(year, month - 1, day));
+  if (calendarDate.getUTCFullYear() !== year || calendarDate.getUTCMonth() !== month - 1 || calendarDate.getUTCDate() !== day) return false;
+  if (Number(match[4]) > 23 || Number(match[5]) > 59 || Number(match[6]) > 59) return false;
+  return !isNaN(new Date(value).getTime());
 }
 
 function handleProgramBookingEmails(data, lang) {
@@ -879,12 +949,15 @@ function firstName(name) {
 }
 
 function formatDate(isoOrText, lang) {
-  // Acepta 'YYYY-MM-DD' o cualquier string. Si parsea como Date,
-  // devuelve formato dd/MM/yyyy (es) o MMM d, yyyy (en).
+  // Acepta 'YYYY-MM-DD' o cualquier string y usa DD/MM/YYYY en ambos idiomas.
   const d = new Date(isoOrText);
   if (isNaN(d.getTime())) return isoOrText;
-  if (lang === 'en') return Utilities.formatDate(d, TIMEZONE, "MMM d, yyyy");
   return Utilities.formatDate(d, TIMEZONE, "dd/MM/yyyy");
+}
+
+function neutralizeSheetFormula(value) {
+  if (typeof value === 'string' && /^\s*[=+\-@]/.test(value)) return "'" + value;
+  return value;
 }
 
 function escapeHtml(s) {

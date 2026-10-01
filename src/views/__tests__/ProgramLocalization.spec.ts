@@ -100,7 +100,17 @@ describe('program localization routes', () => {
     expect(internalLinks.length).toBeGreaterThan(0)
     expect(internalLinks.every((link) => (link.attributes('href') ?? '').startsWith('/en/'))).toBe(true)
     expect(wrapper.text()).toContain('VAT included')
-    expect(wrapper.text()).toContain('31 October 2026')
+    expect(wrapper.text()).toContain('31/10/2026')
+    const comparisonRows = wrapper.findAll('.comparison-row:not(.comparison-header)')
+    expect(comparisonRows).toHaveLength(5)
+    for (const row of comparisonRows) {
+      expect(row.findAll('[role="cell"]').map((cell) => cell.attributes('data-program-label'))).toEqual([
+        'Delegated Maintenance Plan',
+        'Expert-Guided Electronics Plan',
+        'Cleaning & Detailing Plan',
+        'Ready to Cast Off',
+      ])
+    }
     await wrapper.get('[data-length="35"]').trigger('click')
     expect(wrapper.get('[data-program="care"]').text()).toContain('2.5 h')
     expect(wrapper.text()).not.toMatch(/IVA incluido|Consultar las bases|Solicitar revisión|Elige cuánto|Garantía de servicio/)
@@ -109,7 +119,8 @@ describe('program localization routes', () => {
   it.each(routes.slice(1, 5))('has no Spanish residuals in English detail core copy for %s', async (_esPath, enPath) => {
     const wrapper = await visit(enPath)
     expect(wrapper.text()).toContain('VAT included')
-    expect(wrapper.text()).toContain('Wording pending legal review before publication.')
+    expect(wrapper.find('[data-legal-review]').exists()).toBe(false)
+    expect(wrapper.text()).not.toContain('Wording pending legal review before publication.')
     expect(wrapper.text()).not.toMatch(/Todos los programas|Reserva tu cita|Cuota y condiciones|Derecho de desistimiento|Preguntas frecuentes|Programa anterior|Siguiente programa/)
     expect(wrapper.findAll('a[href^="/"]').every((link) => (link.attributes('href') ?? '').startsWith('/en/'))).toBe(true)
   })
@@ -118,7 +129,8 @@ describe('program localization routes', () => {
     const wrapper = await visit('/en/bases-revision-gratuita')
     expect(wrapper.findAll('[data-promotion-condition]')).toHaveLength(7)
     expect(wrapper.text()).toContain('VAT included')
-    expect(wrapper.text()).toContain('31 October 2026')
+    expect(wrapper.text()).toContain('31/10/2026')
+    expect(wrapper.find('[data-legal-review]').exists()).toBe(false)
     expect(wrapper.get('a').attributes('href')).toBe('/en/politica-de-privacidad')
     expect(wrapper.text()).not.toMatch(/Bases de la promoción|Condiciones de la revisión|Una revisión por propietario|Política de Privacidad/)
   })
@@ -129,6 +141,8 @@ describe('program localization routes', () => {
     expect(wrapper.get('#booking-title').text()).toBe('Book your on-board inspection')
     expect(wrapper.text()).toContain('VAT included')
     expect(wrapper.get('[data-promotion-terms]').attributes('href')).toBe('/en/bases-revision-gratuita')
+    expect(wrapper.get('[data-promotion-terms]').attributes('target')).toBe('_blank')
+    expect(wrapper.get('[data-promotion-terms]').attributes('rel')).toBe('noopener')
     expect(wrapper.get('.privacy-check a').attributes('href')).toBe('/en/politica-de-privacidad')
     expect(wrapper.text()).not.toMatch(/Reserva tu revisión|Selecciona un programa|Eslora|Teléfono|Comentarios opcionales|Solicitar revisión gratuita/)
   })
@@ -186,11 +200,13 @@ describe('program localization routes', () => {
   })
 
   it.each([
-    ['/politica-de-privacidad', 'Gestionar la solicitud de reserva y las comunicaciones precontractuales', ['programa y la franja de eslora', 'fecha y hora preferidas', 'nombre', 'correo electrónico', 'teléfono', 'tipo de embarcación', 'comentarios opcionales', 'marca temporal del consentimiento'], 'Vigo, Pontevedra, España'],
-    ['/en/politica-de-privacidad', 'Handle the booking request and pre-contractual communications', ['selected program and boat-length band', 'preferred date and time', 'name', 'email address', 'phone number', 'boat type', 'optional comments', 'privacy-consent timestamp'], 'Vigo, Pontevedra, Spain'],
-  ] as const)('covers program booking processing at %s', async (path, purpose, fields, location) => {
+    ['/politica-de-privacidad', 'Gestionar la solicitud de reserva y las comunicaciones precontractuales', 'artículo 6.1.b) del RGPD', 'El consentimiento se utilizará únicamente cuando resulte aplicable', ['programa y la franja de eslora', 'fecha y hora preferidas', 'nombre', 'correo electrónico', 'teléfono', 'tipo de embarcación', 'comentarios opcionales', 'marca temporal del consentimiento'], 'Vigo, Pontevedra, España'],
+    ['/en/politica-de-privacidad', 'Handle the booking request and pre-contractual communications', 'Article 6(1)(b) GDPR', 'Consent is relied on only where applicable', ['selected program and boat-length band', 'preferred date and time', 'name', 'email address', 'phone number', 'boat type', 'optional comments', 'privacy-consent timestamp'], 'Vigo, Pontevedra, Spain'],
+  ] as const)('covers program booking processing at %s', async (path, purpose, legalBasis, consentBasis, fields, location) => {
     const wrapper = await visit(path)
     expect(wrapper.text()).toContain(purpose)
+    expect(wrapper.text()).toContain(legalBasis)
+    expect(wrapper.text()).toContain(consentBasis)
     expect(wrapper.text()).toMatch(/programa|program/i)
     expect(wrapper.text()).toMatch(/fecha y hora|date and time/i)
     expect(wrapper.text()).toMatch(/marca temporal|timestamp/i)

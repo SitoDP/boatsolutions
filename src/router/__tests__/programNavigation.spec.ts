@@ -2,7 +2,7 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
-import { RouterView } from 'vue-router'
+import { RouterView, type RouteLocationNormalized } from 'vue-router'
 import { createHead } from '@unhead/vue/client'
 import router from '../index'
 
@@ -18,6 +18,22 @@ const canonicalPrograms = [
 ] as const
 
 describe('program routes', () => {
+  it('scrolls smoothly to the programs section when the route includes its hash', async () => {
+    const scrollBehavior = router.options.scrollBehavior
+
+    expect(scrollBehavior).toBeDefined()
+    expect(await scrollBehavior!(
+      router.resolve('/servicios#programas') as RouteLocationNormalized,
+      router.resolve('/') as RouteLocationNormalized,
+      null,
+    )).toEqual({ el: '#programas', behavior: 'smooth' })
+    expect(await scrollBehavior!(
+      router.resolve('/servicios') as RouteLocationNormalized,
+      router.resolve('/') as RouteLocationNormalized,
+      null,
+    )).toEqual({ top: 0 })
+  })
+
   it('registers every canonical Spanish and English program route with matching props and meta', () => {
     const routes = router.getRoutes()
 

@@ -240,7 +240,7 @@ onBeforeUnmount(() => {
           <h2 id="booking-title">{{ t.title }}</h2>
           <p data-promotion-summary>
             {{ text(t.promotionSummary, { duration: promotionDuration, reportValue: freeInspectionPromotion.reportValue }) }}
-            <a data-promotion-terms :href="to('/bases-revision-gratuita')">{{ t.promotionTerms }}</a>.
+            <a data-promotion-terms :href="to('/bases-revision-gratuita')" target="_blank" rel="noopener">{{ t.promotionTerms }}</a>.
           </p>
           <p>{{ t.preferenceIntro }}</p>
           <span class="demo-notice">{{ t.connectedNotice }}</span>

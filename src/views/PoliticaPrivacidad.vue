@@ -27,6 +27,7 @@
           <h2>{{ t.bookingTitle }}</h2>
           <p>{{ t.bookingFields }}</p>
           <p>{{ t.bookingPurpose }}</p>
+          <p>{{ t.bookingLegalBasis }}</p>
           <p>{{ t.bookingRetention }}</p>
           <p>{{ t.bookingProcessors }}</p>
           <p>{{ t.bookingRights }} <a href="mailto:info@boat-solutions.es">info@boat-solutions.es</a>.</p>
@@ -86,6 +87,7 @@ const t = computed(() => lang.value === 'en' ? {
   bookingTitle: 'Program booking requests',
   bookingFields: 'For program booking requests, we process the selected program and boat-length band, preferred date and time, name, email address, phone number, boat type, optional comments, and the privacy-consent timestamp.',
   bookingPurpose: 'Handle the booking request and pre-contractual communications, including checking availability, contacting you about the requested inspection and preparing the requested service information.',
+  bookingLegalBasis: 'The legal basis for managing the booking request and taking pre-contractual steps at your request is Article 6(1)(b) GDPR. Consent is relied on only where applicable to a separate processing activity.',
   bookingRetention: 'We retain booking-request data only for as long as reasonably necessary to handle the request and any resulting pre-contractual relationship, and afterwards only where applicable legal obligations or the establishment, exercise or defence of claims require it. Retention periods may therefore depend on whether the request leads to a contract.',
   bookingProcessors: 'Service providers may process data on our behalf where needed to operate the booking workflow and communications. This may include Google services used to receive or manage form submissions, where applicable, under the provider arrangements and safeguards in force.',
   bookingRights: 'You may exercise your data-protection rights, withdraw consent where consent is the applicable basis, or ask about this processing by contacting',
@@ -131,6 +133,7 @@ const t = computed(() => lang.value === 'en' ? {
   bookingTitle: 'Solicitudes de reserva de programas',
   bookingFields: 'En las solicitudes de reserva de programas tratamos el programa y la franja de eslora seleccionados, la fecha y hora preferidas, nombre, correo electrónico, teléfono, tipo de embarcación, comentarios opcionales y la marca temporal del consentimiento de privacidad.',
   bookingPurpose: 'Gestionar la solicitud de reserva y las comunicaciones precontractuales, incluida la comprobación de disponibilidad, el contacto sobre la revisión solicitada y la preparación de la información del servicio pedido.',
+  bookingLegalBasis: 'La base jurídica para gestionar la solicitud de reserva y adoptar medidas precontractuales a petición del interesado es el artículo 6.1.b) del RGPD. El consentimiento se utilizará únicamente cuando resulte aplicable a una actividad de tratamiento distinta.',
   bookingRetention: 'Conservaremos los datos de la solicitud solo durante el tiempo razonablemente necesario para gestionarla y atender la posible relación precontractual; después, únicamente cuando lo exijan obligaciones legales aplicables o la formulación, ejercicio o defensa de reclamaciones. Por ello, el plazo puede variar según la solicitud llegue o no a convertirse en contrato.',
   bookingProcessors: 'Los proveedores de servicios podrán tratar datos por cuenta de Boat Solutions cuando sea necesario para operar el flujo de reservas y las comunicaciones. Esto puede incluir, cuando corresponda, servicios de Google utilizados para recibir o gestionar envíos de formularios, bajo los acuerdos y garantías vigentes del proveedor.',
   bookingRights: 'Puede ejercer sus derechos de protección de datos, retirar el consentimiento cuando esa sea la base aplicable o consultar este tratamiento escribiendo a',

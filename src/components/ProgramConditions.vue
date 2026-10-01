@@ -82,9 +82,6 @@ const withdrawalParts = computed(() => withdrawalText.value.split(props.conditio
     </div>
     <article class="program-withdrawal-condition">
       <h3>{{ t.conditions.withdrawalTitle }}</h3>
-      <p v-if="props.conditions.withdrawal.requiresLegalReview" class="program-legal-review" data-legal-review role="note">
-        {{ t.conditions.legalReview }}
-      </p>
       <p>
         {{ withdrawalParts[0] }}<a :href="`mailto:${props.conditions.withdrawal.contactEmail}`">{{ props.conditions.withdrawal.contactEmail }}</a>{{ withdrawalParts[1] }}
       </p>

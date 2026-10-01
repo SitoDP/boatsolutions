@@ -64,6 +64,40 @@ describe('program booking flow', () => {
     expect(wrapper.get('.booking-overlay').classes()).toContain('programs-surface')
   })
 
+  it('opens promotion terms in a new tab without clearing the booking draft', async () => {
+    booking.open({ programId: 'navigation', length: 40 })
+    const wrapper = mount(ProgramBookingModal, {
+      props: { today },
+      attachTo: document.body,
+      global: { plugins: [router], stubs: { Teleport: true } },
+    })
+
+    await wrapper.get('#booking-name').setValue('Ana García')
+    await wrapper.get('#booking-email').setValue('ana@example.com')
+    await wrapper.get('#booking-phone').setValue('+34 600 123 123')
+    await wrapper.findAll('.booking-form-column select')[2].setValue('velero')
+    await wrapper.get('.booking-form-column textarea').setValue('Revisar la jarcia antes de salir')
+    await wrapper.get('[data-date="2026-09-30"]').trigger('click')
+    await wrapper.get('[data-time="10:00"]').trigger('click')
+
+    const terms = wrapper.get('[data-promotion-terms]')
+    expect(terms.attributes('target')).toBe('_blank')
+    expect(terms.attributes('rel')).toBe('noopener')
+    await terms.trigger('click')
+
+    expect(booking.isOpen.value).toBe(true)
+    expect(booking.context.value).toEqual({ programId: 'navigation', length: 40 })
+    expect((wrapper.get('#booking-program').element as HTMLSelectElement).value).toBe('navigation')
+    expect((wrapper.get('#booking-length').element as HTMLSelectElement).value).toBe('40')
+    expect(wrapper.get('[data-date="2026-09-30"]').attributes('aria-pressed')).toBe('true')
+    expect(wrapper.get('[data-time="10:00"]').attributes('aria-pressed')).toBe('true')
+    expect((wrapper.get('#booking-name').element as HTMLInputElement).value).toBe('Ana García')
+    expect((wrapper.get('#booking-email').element as HTMLInputElement).value).toBe('ana@example.com')
+    expect((wrapper.get('#booking-phone').element as HTMLInputElement).value).toBe('+34 600 123 123')
+    expect((wrapper.findAll('.booking-form-column select')[2].element as HTMLSelectElement).value).toBe('velero')
+    expect((wrapper.get('.booking-form-column textarea').element as HTMLTextAreaElement).value).toBe('Revisar la jarcia antes de salir')
+  })
+
   it('submits the approved program-booking payload with privacy consent', async () => {
     const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
       JSON.stringify({ ok: true }),

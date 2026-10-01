@@ -13,8 +13,8 @@ const durationLabel = computed(() => promotion.durationHours === 1
   : t.value.durationMany.replace('{durationHours}', String(promotion.durationHours)))
 
 const formattedDeadline = computed(() => new Intl.DateTimeFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', {
-  day: 'numeric',
-  month: 'long',
+  day: '2-digit',
+  month: '2-digit',
   year: 'numeric',
   timeZone: 'UTC',
 }).format(new Date(`${promotion.bookingDeadline}T00:00:00Z`)))
@@ -35,7 +35,6 @@ function text(template: string, values: Record<string, string | number>) {
       <p class="section-kicker">{{ t.kicker }}</p>
       <h1>{{ t.title }}</h1>
       <p>{{ t.intro }}</p>
-      <p v-if="promotion.requiresLegalReview" class="program-legal-review" data-legal-review role="note">{{ t.legalReview }}</p>
     </header>
 
     <section aria-labelledby="promotion-conditions-title">

@@ -80,6 +80,7 @@ def check_detail_and_modal(page: Page) -> None:
     open_page(page, "/programas/electronica-asesorada")
     page.locator('[data-detail-conditions] [data-length="50"]').click()
     assert page.locator("[data-detail-price]").inner_text().strip() == "215 €"
+    assert page.locator("[data-legal-review]").count() == 0
 
     price_box = page.locator(".program-conditions-price").evaluate(
         "el => ({bottom: el.getBoundingClientRect().bottom})"
@@ -102,6 +103,25 @@ def check_detail_and_modal(page: Page) -> None:
     assert dialog.locator('.privacy-check a').get_attribute("href") == "/politica-de-privacidad"
     page.keyboard.press("Escape")
     dialog.wait_for(state="hidden")
+
+
+def check_english_mobile_labels(page: Page) -> None:
+    page.set_viewport_size({"width": 375, "height": 900})
+    open_page(page, "/en/servicios")
+    labels = page.locator(".comparison-row span[data-program-label]").evaluate_all(
+        "els => [...new Set(els.map((el) => el.getAttribute('data-program-label')))]"
+    )
+    assert labels == [
+        "Delegated Maintenance Plan",
+        "Expert-Guided Electronics Plan",
+        "Cleaning & Detailing Plan",
+        "Ready to Cast Off",
+    ], labels
+    pseudo_labels = page.locator(".comparison-row span[data-program-label]").first.evaluate(
+        "el => getComputedStyle(el, '::before').content"
+    )
+    assert "Mantenimiento" not in pseudo_labels and "Electrónica" not in pseudo_labels
+    assert "31/10/2026" in page.locator("main").inner_text()
 
 
 def check_redirects(page: Page) -> None:
@@ -139,6 +159,7 @@ def main() -> None:
         try:
             check_prices(page)
             check_detail_and_modal(page)
+            check_english_mobile_labels(page)
             check_redirects(page)
         except Exception as error:
             failures.append(f"interaction: {error}")

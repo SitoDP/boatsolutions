@@ -61,6 +61,7 @@ describe('production program views', () => {
     expect(price.compareDocumentPosition(selector) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(conditions.text()).toContain('IVA incluido')
     expect(conditions.text()).toContain('14 días naturales')
+    expect(conditions.find('[data-legal-review]').exists()).toBe(false)
   })
 
   it('publishes all seven free-inspection conditions and the privacy policy', () => {
@@ -70,7 +71,8 @@ describe('production program views', () => {
     expect(wrapper.findAll('[data-promotion-condition]')).toHaveLength(7)
     expect(wrapper.text()).toContain('120 €')
     expect(wrapper.text()).toContain('IVA incluido')
-    expect(wrapper.text()).toContain('31 de octubre de 2026')
+    expect(wrapper.text()).toContain('31/10/2026')
+    expect(wrapper.find('[data-legal-review]').exists()).toBe(false)
     expect(wrapper.get('a').attributes('href')).toBe('/politica-de-privacidad')
   })
 })

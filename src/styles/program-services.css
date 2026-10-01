@@ -74,7 +74,7 @@
   }
 
   .comparison-row span::before {
-    content: none !important;
+    content: attr(data-program-label) !important;
   }
 
   .comparison-row span {
@@ -82,17 +82,6 @@
     grid-template-columns: minmax(0, 1fr) auto;
     gap: 12px;
   }
-
-  .comparison-row span::after {
-    color: #657681;
-    font-size: .62rem;
-    text-transform: uppercase;
-  }
-
-  .comparison-row span:nth-child(2)::after { content: 'Mantenimiento'; }
-  .comparison-row span:nth-child(3)::after { content: 'Electrónica'; }
-  .comparison-row span:nth-child(4)::after { content: 'Limpieza'; }
-  .comparison-row span:nth-child(5)::after { content: 'Completo'; }
 
   .testimonial-panel {
     min-height: 480px;

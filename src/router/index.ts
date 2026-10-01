@@ -83,7 +83,8 @@ const router = createRouter({
     // Catch-all
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFound },
   ],
-  scrollBehavior() {
+  scrollBehavior(to) {
+    if (to.hash) return { el: to.hash, behavior: 'smooth' }
     return { top: 0 }
   },
 })
