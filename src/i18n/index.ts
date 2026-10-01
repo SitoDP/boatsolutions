@@ -13,6 +13,10 @@ import { footer } from './footer'
 import { notFound } from './notFound'
 import { transportRequest } from './transportRequest'
 import { detailingRequest } from './detailingRequest'
+import { programsI18n } from './programs'
+import { programDetailsI18n } from './programDetails'
+import { programBookingI18n } from './programBooking'
+import { promotionI18n } from './promotion'
 
 export const i18n = {
   es: {
@@ -31,6 +35,10 @@ export const i18n = {
     notFound: notFound.es,
     transportRequest: transportRequest.es,
     detailingRequest: detailingRequest.es,
+    programs: programsI18n.es,
+    programDetails: programDetailsI18n.es,
+    programBooking: programBookingI18n.es,
+    promotion: promotionI18n.es,
   },
   en: {
     home: home.en,
@@ -48,6 +56,10 @@ export const i18n = {
     notFound: notFound.en,
     transportRequest: transportRequest.en,
     detailingRequest: detailingRequest.en,
+    programs: programsI18n.en,
+    programDetails: programDetailsI18n.en,
+    programBooking: programBookingI18n.en,
+    promotion: promotionI18n.en,
   },
 }
 

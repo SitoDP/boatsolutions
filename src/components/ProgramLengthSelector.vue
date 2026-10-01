@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { BoatLength } from '../data/programs'
+import { useLanguage } from '../composables/useLanguage'
 
 defineProps<{
   lengths: BoatLength[]
@@ -10,15 +11,18 @@ const emit = defineEmits<{
   'update:modelValue': [value: BoatLength]
 }>()
 
+const { useT } = useLanguage()
+const t = useT('programs')
+
 function label(length: BoatLength): string {
-  return length === 30 ? 'Hasta 30' : String(length)
+  return length === 30 ? t.value.lengthSelector.upTo.replace('{length}', String(length)) : String(length)
 }
 </script>
 
 <template>
-  <div class="length-selector" aria-label="Selecciona la eslora de tu barco">
-    <p class="selector-label">¿Cuánto mide tu barco?</p>
-    <div class="length-options" role="group" aria-label="Eslora en pies">
+  <div class="length-selector" :aria-label="t.lengthSelector.ariaLabel">
+    <p class="selector-label">{{ t.lengthSelector.question }}</p>
+    <div class="length-options" role="group" :aria-label="t.lengthSelector.groupLabel">
       <button
         v-for="length in lengths"
         :key="length"
@@ -30,9 +34,9 @@ function label(length: BoatLength): string {
         @click="emit('update:modelValue', length)"
       >
         <span>{{ label(length) }}</span>
-        <small>pies</small>
+        <small>{{ t.lengthSelector.feet }}</small>
       </button>
     </div>
-    <p class="selector-note">Otras esloras: diseñamos una propuesta a medida.</p>
+    <p class="selector-note">{{ t.lengthSelector.otherLengths }}</p>
   </div>
 </template>

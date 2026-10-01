@@ -4,7 +4,8 @@ import ProgramBookingCalendar from './ProgramBookingCalendar.vue'
 import { lengths, programs, type BoatLength, type ProgramId } from '../data/programs'
 import { freeInspectionPromotion } from '../data/programPromotion'
 import { useProgramBooking } from '../composables/useProgramBooking'
-import { formatBookingDate, isBookableDate, parseIsoDate } from '../lib/programBookingCalendar'
+import { useLanguage } from '../composables/useLanguage'
+import { isBookableDate, parseIsoDate } from '../lib/programBookingCalendar'
 import { optionalEnv } from '../lib/env'
 import type { BookingFormData, CalendarSelection } from '../types/programBooking'
 import '../styles/programs.css'
@@ -12,6 +13,9 @@ import '../styles/programs.css'
 const props = defineProps<{ today?: Date }>()
 const emit = defineEmits<{ submitted: [payload: BookingFormData] }>()
 const booking = useProgramBooking()
+const { lang, to, useT } = useLanguage()
+const t = useT('programBooking')
+const programsT = useT('programs')
 
 const dialog = ref<HTMLElement | null>(null)
 const closeButton = ref<HTMLButtonElement | null>(null)
@@ -35,10 +39,22 @@ const errors = reactive<Record<string, string>>({})
 let previousFocus: HTMLElement | null = null
 let previousOverflow = ''
 
-const selectedProgramName = computed(() => programs.find((item) => item.id === submittedData.value?.programId)?.name ?? '')
+const selectedProgramName = computed(() => submittedData.value?.programId
+  ? programsT.value.programs[submittedData.value.programId].name
+  : '')
 const promotionDuration = computed(() => freeInspectionPromotion.durationHours === 1
-  ? 'Una hora'
-  : `${freeInspectionPromotion.durationHours} horas`)
+  ? t.value.durationOne
+  : t.value.durationMany.replace('{durationHours}', String(freeInspectionPromotion.durationHours)))
+
+function text(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce((result, [key, value]) => result.split(`{${key}}`).join(String(value)), template)
+}
+
+function formatLocalizedBookingDate(value: string) {
+  return new Intl.DateTimeFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', {
+    day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC',
+  }).format(new Date(`${value}T00:00:00Z`))
+}
 
 function resetForm() {
   form.programId = booking.context.value.programId ?? ''
@@ -90,18 +106,18 @@ function clearError(field: string) {
 
 function validate(): boolean {
   Object.keys(errors).forEach((key) => delete errors[key])
-  if (!form.programId) errors.programId = 'Selecciona un programa'
-  if (form.name.trim().length < 2) errors.name = 'Introduce tu nombre completo'
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) errors.email = 'Introduce un email válido'
-  if (!/^\+?[\d\s().-]{7,}$/.test(form.phone.trim())) errors.phone = 'Introduce un teléfono válido'
+  if (!form.programId) errors.programId = t.value.errors.programId
+  if (form.name.trim().length < 2) errors.name = t.value.errors.name
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(form.email.trim())) errors.email = t.value.errors.email
+  if (!/^\+?[\d\s().-]{7,}$/.test(form.phone.trim())) errors.phone = t.value.errors.phone
   if (!schedule.value.date) {
-    errors.date = 'Selecciona una fecha'
+    errors.date = t.value.errors.date
   } else {
     const date = parseIsoDate(schedule.value.date)
-    if (!date || !isBookableDate(date, props.today ?? new Date())) errors.date = 'Selecciona una fecha disponible'
+    if (!date || !isBookableDate(date, props.today ?? new Date())) errors.date = t.value.errors.dateUnavailable
   }
-  if (!schedule.value.time) errors.time = 'Selecciona una hora preferida'
-  if (!form.privacyAccepted) errors.privacy = 'Debes aceptar la política de privacidad'
+  if (!schedule.value.time) errors.time = t.value.errors.time
+  if (!form.privacyAccepted) errors.privacy = t.value.errors.privacy
   return Object.keys(errors).length === 0
 }
 
@@ -125,23 +141,25 @@ async function submit() {
   const endpoint = optionalEnv('VITE_SCRIPT_URL')
 
   if (!program || !endpoint) {
-    submitError.value = 'La automatización no está configurada. Contacta con Boat Solutions por teléfono.'
+    submitError.value = t.value.errors.notConfigured
     return
   }
 
   isSubmitting.value = true
   submitError.value = ''
+  const controller = new AbortController()
+  const timeout = window.setTimeout(() => controller.abort(), 15000)
 
   try {
-    await fetch(endpoint, {
+    const response = await fetch(endpoint, {
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      redirect: 'follow',
+      signal: controller.signal,
       body: JSON.stringify({
         type: 'program-booking',
-        language: 'es',
+        language: lang.value,
         programId: payload.programId,
-        programName: program.name,
+        programName: programsT.value.programs[program.id].name,
         length: payload.length,
         monthlyPrice: program.prices[payload.length],
         priceIncludesVat: true,
@@ -153,19 +171,23 @@ async function submit() {
         time: payload.time,
         comments: payload.comments,
         privacyAccepted: true,
-        privacyPolicyVersion: '2025-01',
+        privacyPolicyVersion: '2026-10',
         consentedAt: new Date().toISOString(),
-        source: 'programas-preview',
+        source: 'boat-solutions.es',
       }),
     })
+    if (!response.ok) throw new Error(`HTTP ${response.status}`)
+    const result = await response.json() as { ok?: boolean; error?: string }
+    if (result.ok !== true) throw new Error(result.error || 'unknown')
     submittedData.value = payload
     success.value = true
     emit('submitted', payload)
     await nextTick()
     successPanel.value?.focus()
   } catch {
-    submitError.value = 'No hemos podido enviar la solicitud. Revisa tu conexión e inténtalo de nuevo.'
+    submitError.value = t.value.errors.submit
   } finally {
+    window.clearTimeout(timeout)
     isSubmitting.value = false
   }
 }
@@ -211,18 +233,17 @@ onBeforeUnmount(() => {
         aria-modal="true"
         aria-labelledby="booking-title"
       >
-        <button ref="closeButton" type="button" class="booking-close" aria-label="Cerrar reserva" @click="close">×</button>
+        <button ref="closeButton" type="button" class="booking-close" :aria-label="t.closeAria" @click="close">×</button>
 
         <header class="booking-modal-header">
-          <p class="section-kicker">Revisión inicial gratuita · {{ promotionDuration }}</p>
-          <h2 id="booking-title">Reserva tu revisión a bordo</h2>
+          <p class="section-kicker">{{ text(t.kicker, { duration: promotionDuration }) }}</p>
+          <h2 id="booking-title">{{ t.title }}</h2>
           <p data-promotion-summary>
-            {{ promotionDuration }} de revisión general a bordo con informe escrito, valorada en
-            {{ freeInspectionPromotion.reportValue }} €, IVA incluido.
-            <a data-promotion-terms href="/bases-revision-gratuita">Consulta las bases</a>.
+            {{ text(t.promotionSummary, { duration: promotionDuration, reportValue: freeInspectionPromotion.reportValue }) }}
+            <a data-promotion-terms :href="to('/bases-revision-gratuita')">{{ t.promotionTerms }}</a>.
           </p>
-          <p>Elige una fecha y una hora preferidas. Confirmaremos la disponibilidad personalmente.</p>
-          <span class="demo-notice">Solicitud conectada con Boat Solutions.</span>
+          <p>{{ t.preferenceIntro }}</p>
+          <span class="demo-notice">{{ t.connectedNotice }}</span>
         </header>
 
         <div
@@ -235,16 +256,16 @@ onBeforeUnmount(() => {
           tabindex="-1"
         >
           <span class="success-mark" aria-hidden="true">✓</span>
-          <p class="section-kicker">Solicitud enviada</p>
-          <h3>Hemos enviado tu solicitud de revisión a bordo.</h3>
+          <p class="section-kicker">{{ t.success.kicker }}</p>
+          <h3>{{ t.success.title }}</h3>
           <dl>
-            <div><dt>Programa</dt><dd>{{ selectedProgramName }}</dd></div>
-            <div><dt>Eslora</dt><dd>Hasta {{ submittedData.length }} pies</dd></div>
-            <div><dt>Fecha</dt><dd>{{ formatBookingDate(submittedData.date) }}</dd></div>
-            <div><dt>Hora preferida</dt><dd>{{ submittedData.time }}</dd></div>
+            <div><dt>{{ t.success.program }}</dt><dd>{{ selectedProgramName }}</dd></div>
+            <div><dt>{{ t.success.length }}</dt><dd>{{ text(programsT.lengthSelector.upTo, { length: submittedData.length }) }} {{ programsT.lengthSelector.feet }}</dd></div>
+            <div><dt>{{ t.success.date }}</dt><dd>{{ formatLocalizedBookingDate(submittedData.date) }}</dd></div>
+            <div><dt>{{ t.success.time }}</dt><dd>{{ submittedData.time }}</dd></div>
           </dl>
-          <p>Boat Solutions confirmará personalmente la disponibilidad de la fecha y hora elegidas. Si no recibes el correo de confirmación, contacta con nosotros.</p>
-          <button type="button" class="button button-primary" @click="close">Cerrar</button>
+          <p>{{ t.success.body }}</p>
+          <button type="button" class="button button-primary" @click="close">{{ t.success.close }}</button>
         </div>
 
         <form v-else class="booking-layout" novalidate @submit.prevent="submit">
@@ -259,66 +280,66 @@ onBeforeUnmount(() => {
           <div class="booking-form-column">
             <div class="booking-field-row">
               <label class="booking-field">
-                <span>Programa</span>
+                <span>{{ t.fields.program }}</span>
                 <select id="booking-program" v-model="form.programId" :aria-invalid="Boolean(errors.programId)" :aria-describedby="errors.programId ? 'booking-program-error' : undefined" @change="clearError('programId')">
-                  <option value="">Selecciona un programa</option>
-                  <option v-for="program in programs" :key="program.id" :value="program.id">{{ program.name }}</option>
+                  <option value="">{{ t.fields.selectProgram }}</option>
+                  <option v-for="program in programs" :key="program.id" :value="program.id">{{ programsT.programs[program.id].name }}</option>
                 </select>
                 <small v-if="errors.programId" id="booking-program-error" class="field-error" role="alert">{{ errors.programId }}</small>
               </label>
               <label class="booking-field">
-                <span>Eslora</span>
+                <span>{{ t.fields.length }}</span>
                 <select id="booking-length" v-model.number="form.length">
-                  <option v-for="length in lengths" :key="length" :value="length">Hasta {{ length }} pies</option>
+                  <option v-for="length in lengths" :key="length" :value="length">{{ text(programsT.lengthSelector.upTo, { length }) }} {{ programsT.lengthSelector.feet }}</option>
                 </select>
               </label>
             </div>
 
             <label class="booking-field">
-              <span>Nombre completo</span>
+              <span>{{ t.fields.fullName }}</span>
               <input id="booking-name" v-model="form.name" type="text" autocomplete="name" :aria-invalid="Boolean(errors.name)" :aria-describedby="errors.name ? 'booking-name-error' : undefined" @input="clearError('name')" />
               <small v-if="errors.name" id="booking-name-error" class="field-error" role="alert">{{ errors.name }}</small>
             </label>
 
             <div class="booking-field-row">
               <label class="booking-field">
-                <span>Email</span>
+                <span>{{ t.fields.email }}</span>
                 <input id="booking-email" v-model="form.email" type="email" autocomplete="email" :aria-invalid="Boolean(errors.email)" :aria-describedby="errors.email ? 'booking-email-error' : undefined" @input="clearError('email')" />
                 <small v-if="errors.email" id="booking-email-error" class="field-error" role="alert">{{ errors.email }}</small>
               </label>
               <label class="booking-field">
-                <span>Teléfono</span>
+                <span>{{ t.fields.phone }}</span>
                 <input id="booking-phone" v-model="form.phone" type="tel" autocomplete="tel" :aria-invalid="Boolean(errors.phone)" :aria-describedby="errors.phone ? 'booking-phone-error' : undefined" @input="clearError('phone')" />
                 <small v-if="errors.phone" id="booking-phone-error" class="field-error" role="alert">{{ errors.phone }}</small>
               </label>
             </div>
 
             <label class="booking-field">
-              <span>Tipo de embarcación</span>
+              <span>{{ t.fields.boatType }}</span>
               <select v-model="form.boatType">
-                <option value="">Selecciona una opción</option>
-                <option value="velero">Velero</option>
-                <option value="yate">Yate</option>
-                <option value="lancha">Lancha</option>
-                <option value="catamaran">Catamarán</option>
-                <option value="otro">Otro</option>
+                <option value="">{{ t.fields.selectOption }}</option>
+                <option value="velero">{{ t.fields.sailboat }}</option>
+                <option value="yate">{{ t.fields.yacht }}</option>
+                <option value="lancha">{{ t.fields.motorboat }}</option>
+                <option value="catamaran">{{ t.fields.catamaran }}</option>
+                <option value="otro">{{ t.fields.other }}</option>
               </select>
             </label>
 
             <label class="booking-field">
-              <span>Comentarios opcionales</span>
-              <textarea v-model="form.comments" rows="3" placeholder="Cuéntanos brevemente qué necesitas revisar."></textarea>
+              <span>{{ t.fields.comments }}</span>
+              <textarea v-model="form.comments" rows="3" :placeholder="t.fields.commentsPlaceholder"></textarea>
             </label>
 
             <label class="privacy-check">
               <input id="booking-privacy" v-model="form.privacyAccepted" type="checkbox" :aria-describedby="errors.privacy ? 'booking-privacy-error' : undefined" @change="clearError('privacy')" />
-              <span>Acepto la <a href="https://boat-solutions.es/politica-de-privacidad" target="_blank" rel="noopener">política de privacidad</a>.</span>
+              <span>{{ t.fields.privacyPrefix }} <a :href="to('/politica-de-privacidad')" target="_blank" rel="noopener">{{ t.fields.privacyLink }}</a>.</span>
             </label>
             <small v-if="errors.privacy" id="booking-privacy-error" class="field-error" role="alert">{{ errors.privacy }}</small>
 
             <p v-if="submitError" data-submit-error class="submit-error" role="alert">{{ submitError }}</p>
             <button type="submit" class="button booking-submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Enviando solicitud…' : 'Solicitar revisión gratuita' }}
+              {{ isSubmitting ? t.submitting : t.submit }}
             </button>
           </div>
         </form>

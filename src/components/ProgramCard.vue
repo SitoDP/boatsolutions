@@ -2,8 +2,8 @@
 import { computed } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useProgramBooking } from '../composables/useProgramBooking'
-import { programDetails } from '../data/programDetails'
-import { formatIncludedHours, type BoatLength, type Program } from '../data/programs'
+import { useLanguage } from '../composables/useLanguage'
+import { type BoatLength, type Program } from '../data/programs'
 
 const props = defineProps<{
   program: Program
@@ -11,14 +11,26 @@ const props = defineProps<{
   savings?: number
 }>()
 
-const includedFeatures = computed(() => programDetails[props.program.id].included.slice(0, 4))
+const { lang, to, useT } = useLanguage()
+const t = useT('programs')
+const details = useT('programDetails')
+const copy = computed(() => t.value.programs[props.program.id])
+const includedFeatures = computed(() => details.value[props.program.id].included.slice(0, 4))
 const additionalService = computed(() => (
-  props.program.id === 'ready' ? programDetails.ready.exclusions[0] : null
+  props.program.id === 'ready' ? details.value.ready.exclusions[0] : null
 ))
 const { open } = useProgramBooking()
 
 function openBooking() {
   open({ programId: props.program.id, length: props.length })
+}
+
+function hours(value: number) {
+  return `${new Intl.NumberFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', { maximumFractionDigits: 1 }).format(value)} h`
+}
+
+function text(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce((result, [key, value]) => result.split(`{${key}}`).join(String(value)), template)
 }
 </script>
 
@@ -28,28 +40,28 @@ function openBooking() {
     :class="{ featured: program.highlighted }"
     :data-program="program.id"
     :data-price="program.prices[length]"
-    :data-hours="formatIncludedHours(program.includedHours[length])"
+    :data-hours="hours(program.includedHours[length])"
     :data-savings="savings"
   >
     <template v-if="program.highlighted">
       <div class="featured-intro" data-featured-intro>
-        <p class="program-category">{{ program.shortName }}</p>
-        <h3>{{ program.name }}</h3>
-        <p class="recommended">La opción completa</p>
-        <p class="program-description">{{ program.description }}</p>
+        <p class="program-category">{{ copy.shortName }}</p>
+        <h3>{{ copy.name }}</h3>
+        <p class="recommended">{{ t.card.recommended }}</p>
+        <p class="program-description">{{ copy.description }}</p>
       </div>
 
       <div class="featured-offer" data-featured-offer>
         <div class="price-block">
-          <span class="price-prefix">Cuota mensual</span>
+          <span class="price-prefix">{{ t.card.monthlyFee }}</span>
           <strong>{{ program.prices[length] }} €</strong>
-          <span class="price-period">/ mes</span>
+          <span class="price-period">{{ t.card.perMonth }}</span>
         </div>
         <p class="program-conditions">
-          {{ formatIncludedHours(program.includedHours[length]) }} disponibles al mes · IVA incluido
+          {{ text(t.card.hoursAvailable, { hours: hours(program.includedHours[length]) }) }}
         </p>
         <p v-if="savings" class="savings" data-savings>
-          Ahorras {{ savings }} €/mes frente a contratar los programas por separado.
+          {{ text(t.card.savings, { savings: savings ?? 0 }) }}
         </p>
       </div>
 
@@ -61,14 +73,14 @@ function openBooking() {
       </ul>
 
       <div class="card-actions">
-        <RouterLink :to="`/programas/${program.slug}`" class="card-cta">Ver programa completo</RouterLink>
+        <RouterLink :to="to(`/programas/${program.slug}`)" class="card-cta">{{ t.card.viewComplete }}</RouterLink>
         <button
           type="button"
           class="card-booking"
           :data-booking-cta="`card-${program.id}`"
           @click="openBooking"
         >
-          Solicitar revisión
+          {{ t.card.requestInspection }}
         </button>
       </div>
     </template>
@@ -76,23 +88,23 @@ function openBooking() {
     <template v-else>
       <div class="card-heading">
         <div>
-          <p class="program-category">{{ program.shortName }}</p>
-          <h3>{{ program.name }}</h3>
+          <p class="program-category">{{ copy.shortName }}</p>
+          <h3>{{ copy.name }}</h3>
         </div>
       </div>
 
-      <p class="program-description">{{ program.description }}</p>
+      <p class="program-description">{{ copy.description }}</p>
 
       <div class="price-block">
-        <span class="price-prefix">Cuota mensual</span>
+        <span class="price-prefix">{{ t.card.monthlyFee }}</span>
         <strong>{{ program.prices[length] }} €</strong>
-        <span class="price-period">/ mes</span>
+        <span class="price-period">{{ t.card.perMonth }}</span>
       </div>
       <p class="program-conditions">
-        {{ formatIncludedHours(program.includedHours[length]) }} disponibles al mes · IVA incluido
+        {{ text(t.card.hoursAvailable, { hours: hours(program.includedHours[length]) }) }}
       </p>
-      <p v-if="program.hoursNote" class="program-hours-note" data-program-hours-note>
-        {{ program.hoursNote }}
+      <p v-if="copy.hoursNote" class="program-hours-note" data-program-hours-note>
+        {{ copy.hoursNote }}
       </p>
 
       <ul data-program-included>
@@ -107,14 +119,14 @@ function openBooking() {
       </p>
 
       <div class="card-actions">
-        <RouterLink :to="`/programas/${program.slug}`" class="card-cta">Ver programa</RouterLink>
+        <RouterLink :to="to(`/programas/${program.slug}`)" class="card-cta">{{ t.card.view }}</RouterLink>
         <button
           type="button"
           class="card-booking"
           :data-booking-cta="`card-${program.id}`"
           @click="openBooking"
         >
-          Solicitar revisión
+          {{ t.card.requestInspection }}
         </button>
       </div>
     </template>

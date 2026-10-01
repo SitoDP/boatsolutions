@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 import { commercialConditions } from '../programCommercialConditions'
-import { programDetails } from '../programDetails'
+import { programDetailIds } from '../programDetails'
 import { freeInspectionPromotion } from '../programPromotion'
+import { programDetailsI18n } from '../../i18n/programDetails'
+import { programsI18n } from '../../i18n/programs'
 import {
   ADDITIONAL_HOURLY_RATE,
   calculateBundleSavings,
@@ -12,7 +14,7 @@ import {
 describe('production program catalogue', () => {
   it('publishes the approved length bands, prices, hours and savings', () => {
     expect(lengths).toEqual([30, 35, 40, 45, 50])
-    expect(programs.map((program) => program.name)).toEqual([
+    expect(programs.map((program) => programsI18n.es.programs[program.id].name)).toEqual([
       'Plan Mantenimiento Delegado',
       'Plan Electrónica Asesorada',
       'Plan Limpieza y Detailing',
@@ -50,18 +52,23 @@ describe('production program catalogue', () => {
     expect(commercialConditions.renewal.noticeDays).toBe(30)
     expect(commercialConditions.additionalHours).toEqual({ hourlyRate: 60, vatIncluded: true })
     expect(commercialConditions.withdrawal.periodDays).toBe(14)
+    expect(commercialConditions.withdrawal.requiresLegalReview).toBe(true)
   })
 
   it('provides complete, evidence-limited content for every program', () => {
-    for (const detail of Object.values(programDetails)) {
-      expect(detail.included.length).toBeGreaterThan(0)
-      expect(detail.workflow.length).toBeGreaterThan(0)
-      expect(detail.faq.length).toBeGreaterThan(0)
-      expect(detail.specificConditions.length).toBeGreaterThan(0)
+    expect(programDetailIds).toEqual(programs.map((program) => program.id))
+    for (const language of ['es', 'en'] as const) {
+      for (const detail of Object.values(programDetailsI18n[language])) {
+        expect(detail.included.length).toBeGreaterThan(0)
+        expect(detail.workflow.length).toBeGreaterThan(0)
+        expect(detail.faq.length).toBeGreaterThan(0)
+        expect(detail.specificConditions.length).toBeGreaterThan(0)
+      }
     }
-    expect(JSON.stringify(programDetails)).not.toMatch(/Dulcinea|Marcela|tienda online|mantenimiento integral/i)
-    expect(JSON.stringify(programDetails.complete)).toMatch(/hasta un 16\s*%/i)
-    expect(programDetails.ready.caseStudy).toBeNull()
-    expect(programDetails.complete.caseStudy).toBeNull()
+    expect(JSON.stringify(programDetailsI18n)).not.toMatch(/Dulcinea|Marcela|tienda online|mantenimiento integral/i)
+    expect(JSON.stringify(programDetailsI18n.es.complete)).toMatch(/hasta un 16\s*%/i)
+    expect(JSON.stringify(programDetailsI18n.en.complete)).toMatch(/up to 16%/i)
+    expect(programDetailsI18n.es.ready.caseStudy).toBeNull()
+    expect(programDetailsI18n.en.complete.caseStudy).toBeNull()
   })
 })

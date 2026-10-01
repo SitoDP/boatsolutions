@@ -1,17 +1,24 @@
 // @vitest-environment jsdom
 import { flushPromises, mount } from '@vue/test-utils'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import ProgramBookingModal from '../ProgramBookingModal.vue'
 import ProgramBookingCalendar from '../ProgramBookingCalendar.vue'
 import { useProgramBooking } from '../../composables/useProgramBooking'
 import { useProgramSelection } from '../../composables/useProgramSelection'
 import type { CalendarSelection } from '../../types/programBooking'
+import router from '../../router'
 
 const booking = useProgramBooking()
 const today = new Date(2026, 8, 29)
 
+beforeAll(() => {
+  vi.stubGlobal('scrollTo', vi.fn())
+})
+
 describe('program booking flow', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
+    await router.push('/')
+    await router.isReady()
     booking.close()
     useProgramSelection().selectedLength.value = 30
     document.body.innerHTML = ''
@@ -31,6 +38,7 @@ describe('program booking flow', () => {
   it('enforces weekdays and the 90-day window while emitting ISO date and time', async () => {
     const wrapper = mount(ProgramBookingCalendar, {
       props: { modelValue: { date: '2026-09-30', time: '10:00' }, today },
+      global: { plugins: [router] },
     })
 
     expect(wrapper.get('[data-date="2026-09-28"]').attributes('disabled')).toBeDefined()
@@ -50,19 +58,22 @@ describe('program booking flow', () => {
     booking.open({ programId: 'care', length: 30 })
     const wrapper = mount(ProgramBookingModal, {
       props: { today },
-      global: { stubs: { Teleport: true } },
+      global: { plugins: [router], stubs: { Teleport: true } },
     })
 
     expect(wrapper.get('.booking-overlay').classes()).toContain('programs-surface')
   })
 
   it('submits the approved program-booking payload with privacy consent', async () => {
-    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 200 }))
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ ok: true }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ))
     booking.open({ programId: 'navigation', length: 40 })
     const wrapper = mount(ProgramBookingModal, {
       props: { today },
       attachTo: document.body,
-      global: { stubs: { Teleport: true } },
+      global: { plugins: [router], stubs: { Teleport: true } },
     })
 
     await wrapper.get('#booking-name').setValue('Ana García')
@@ -78,8 +89,7 @@ describe('program booking flow', () => {
     expect(url).toBe('https://script.google.com/macros/s/test/exec')
     expect(request).toEqual(expect.objectContaining({
       method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+      redirect: 'follow',
     }))
     expect(JSON.parse(String(request?.body))).toMatchObject({
       type: 'program-booking',
@@ -92,9 +102,84 @@ describe('program booking flow', () => {
       date: '2026-09-30',
       time: '10:00',
       privacyAccepted: true,
-      privacyPolicyVersion: '2025-01',
-      source: 'programas-preview',
+      privacyPolicyVersion: '2026-10',
+      source: 'boat-solutions.es',
     })
     expect(wrapper.get('[data-booking-success]').text()).toContain('Solicitud enviada')
+  })
+
+  it('does not show success when Apps Script rejects the booking', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ ok: false, error: 'invalid program booking' }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ))
+    booking.open({ programId: 'navigation', length: 40 })
+    const wrapper = mount(ProgramBookingModal, {
+      props: { today },
+      attachTo: document.body,
+      global: { plugins: [router], stubs: { Teleport: true } },
+    })
+
+    await wrapper.get('#booking-name').setValue('Ana García')
+    await wrapper.get('#booking-email').setValue('ana@example.com')
+    await wrapper.get('#booking-phone').setValue('+34 600 123 123')
+    await wrapper.get('[data-date="2026-09-30"]').trigger('click')
+    await wrapper.get('[data-time="10:00"]').trigger('click')
+    await wrapper.get('#booking-privacy').setValue(true)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.find('[data-booking-success]').exists()).toBe(false)
+    expect(wrapper.get('[data-submit-error]').text()).toContain('No hemos podido enviar')
+  })
+
+  it('does not show success for a malformed Apps Script response', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      '<html>unexpected response</html>',
+      { status: 200, headers: { 'Content-Type': 'text/html' } },
+    ))
+    booking.open({ programId: 'navigation', length: 40 })
+    const wrapper = mount(ProgramBookingModal, {
+      props: { today },
+      attachTo: document.body,
+      global: { plugins: [router], stubs: { Teleport: true } },
+    })
+
+    await wrapper.get('#booking-name').setValue('Ana García')
+    await wrapper.get('#booking-email').setValue('ana@example.com')
+    await wrapper.get('#booking-phone').setValue('+34 600 123 123')
+    await wrapper.get('[data-date="2026-09-30"]').trigger('click')
+    await wrapper.get('[data-time="10:00"]').trigger('click')
+    await wrapper.get('#booking-privacy').setValue(true)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.find('[data-booking-success]').exists()).toBe(false)
+    expect(wrapper.get('[data-submit-error]').text()).toContain('No hemos podido enviar')
+  })
+
+  it.each([
+    ['an HTTP error', () => Promise.resolve(new Response(JSON.stringify({ ok: false }), { status: 500 }))],
+    ['a network error', () => Promise.reject(new TypeError('offline'))],
+  ])('does not show success after %s', async (_label, responseFactory) => {
+    vi.spyOn(globalThis, 'fetch').mockImplementation(responseFactory)
+    booking.open({ programId: 'navigation', length: 40 })
+    const wrapper = mount(ProgramBookingModal, {
+      props: { today },
+      attachTo: document.body,
+      global: { plugins: [router], stubs: { Teleport: true } },
+    })
+
+    await wrapper.get('#booking-name').setValue('Ana García')
+    await wrapper.get('#booking-email').setValue('ana@example.com')
+    await wrapper.get('#booking-phone').setValue('+34 600 123 123')
+    await wrapper.get('[data-date="2026-09-30"]').trigger('click')
+    await wrapper.get('[data-time="10:00"]').trigger('click')
+    await wrapper.get('#booking-privacy').setValue(true)
+    await wrapper.get('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.find('[data-booking-success]').exists()).toBe(false)
+    expect(wrapper.get('[data-submit-error]').text()).toContain('No hemos podido enviar')
   })
 })

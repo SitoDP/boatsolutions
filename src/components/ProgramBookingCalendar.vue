@@ -10,6 +10,7 @@ import {
   toIsoDate,
 } from '../lib/programBookingCalendar'
 import type { CalendarSelection } from '../types/programBooking'
+import { useLanguage } from '../composables/useLanguage'
 
 const props = withDefaults(defineProps<{
   modelValue: CalendarSelection
@@ -23,6 +24,10 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   'update:modelValue': [value: CalendarSelection]
 }>()
+
+const { lang, useT } = useLanguage()
+const t = useT('programBooking')
+const locale = computed(() => lang.value === 'en' ? 'en-GB' : 'es-ES')
 
 const initialDate = parseIsoDate(props.modelValue.date ?? '') ?? props.today
 const calendarRoot = ref<HTMLElement | null>(null)
@@ -38,7 +43,7 @@ watch(() => props.modelValue.date, (value) => {
   focusedDate.value = value ?? ''
 })
 
-const monthLabel = computed(() => new Intl.DateTimeFormat('es-ES', {
+const monthLabel = computed(() => new Intl.DateTimeFormat(locale.value, {
   month: 'long',
   year: 'numeric',
 }).format(new Date(visibleYear.value, visibleMonth.value, 1)))
@@ -104,7 +109,7 @@ function selectTime(time: string) {
 }
 
 function dateLabel(date: Date) {
-  return new Intl.DateTimeFormat('es-ES', { dateStyle: 'full' }).format(date)
+  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'full' }).format(date)
 }
 
 function isTabStop(date: Date): boolean {
@@ -140,13 +145,13 @@ async function moveDayFocus(event: KeyboardEvent, date: Date) {
 </script>
 
 <template>
-  <section class="booking-calendar" aria-label="Selecciona fecha y hora preferidas">
+  <section class="booking-calendar" :aria-label="t.calendar.ariaLabel">
     <div class="calendar-heading">
       <button
         type="button"
         data-month="previous"
         :disabled="!canGoPrevious"
-        aria-label="Mes anterior"
+        :aria-label="t.calendar.previousMonth"
         @click="changeMonth(-1)"
       >←</button>
       <h3>{{ monthLabel }}</h3>
@@ -154,16 +159,16 @@ async function moveDayFocus(event: KeyboardEvent, date: Date) {
         type="button"
         data-month="next"
         :disabled="!canGoNext"
-        aria-label="Mes siguiente"
+        :aria-label="t.calendar.nextMonth"
         @click="changeMonth(1)"
       >→</button>
     </div>
 
     <div class="calendar-weekdays" aria-hidden="true">
-      <span v-for="weekday in ['L', 'M', 'X', 'J', 'V', 'S', 'D']" :key="weekday">{{ weekday }}</span>
+      <span v-for="(weekday, index) in t.calendar.weekdays" :key="`${weekday}-${index}`">{{ weekday }}</span>
     </div>
 
-    <div ref="calendarRoot" class="calendar-grid" role="grid" aria-label="Calendario de reservas">
+    <div ref="calendarRoot" class="calendar-grid" role="grid" :aria-label="t.calendar.gridLabel">
       <div v-for="(week, weekIndex) in calendarWeeks" :key="weekIndex" class="calendar-row" role="row">
         <div v-for="date in week" :key="toIsoDate(date)" class="calendar-cell" role="gridcell">
           <button
@@ -190,8 +195,8 @@ async function moveDayFocus(event: KeyboardEvent, date: Date) {
 
     <div v-if="modelValue.date" class="time-selection">
       <div>
-        <h4>Hora preferida</h4>
-        <p>La disponibilidad definitiva se confirmará contigo.</p>
+        <h4>{{ t.calendar.preferredTime }}</h4>
+        <p>{{ t.calendar.availability }}</p>
       </div>
       <div class="time-grid">
         <button

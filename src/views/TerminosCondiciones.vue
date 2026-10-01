@@ -57,7 +57,7 @@
             <p><strong>{{ t.contactController }}</strong> Boat Solutions International S.L.</p>
             <p><strong>{{ t.contactEmail }}</strong> <a href="mailto:info@boat-solutions.es">info@boat-solutions.es</a></p>
             <p><strong>{{ t.contactPhone }}</strong> <a href="tel:+34676625595">+34 676 625 595</a></p>
-            <p><strong>{{ t.contactLocation }}</strong> Vigo, Pontevedra, España</p>
+            <p><strong>{{ t.contactLocation }}</strong> {{ t.contactLocationValue }}</p>
           </div>
 
         </div>
@@ -123,6 +123,7 @@ const t = computed(() => lang.value === 'en' ? {
   contactEmail: 'Email:',
   contactPhone: 'Phone:',
   contactLocation: 'Location:',
+  contactLocationValue: 'Vigo, Pontevedra, Spain',
 } : {
   title: 'Términos y Condiciones',
   updated: 'Última actualización: enero de 2025',
@@ -173,6 +174,7 @@ const t = computed(() => lang.value === 'en' ? {
   contactEmail: 'Email:',
   contactPhone: 'Teléfono:',
   contactLocation: 'Ubicación:',
+  contactLocationValue: 'Vigo, Pontevedra, España',
 })
 
 usePageMeta({

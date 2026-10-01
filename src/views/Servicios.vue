@@ -3,57 +3,69 @@ import { computed } from 'vue'
 import ProgramLengthSelector from '../components/ProgramLengthSelector.vue'
 import ProgramCard from '../components/ProgramCard.vue'
 import { useProgramBooking } from '../composables/useProgramBooking'
+import { useLanguage } from '../composables/useLanguage'
+import { usePageMeta } from '../composables/useMeta'
 import { useProgramSelection } from '../composables/useProgramSelection'
 import { commercialConditions } from '../data/programCommercialConditions'
 import { calculateBundleSavings, lengths, programs } from '../data/programs'
 import { programVisuals } from '../data/programVisuals'
 import { freeInspectionPromotion } from '../data/programPromotion'
+import { programsI18n } from '../i18n/programs'
 import '../styles/programs.css'
 import '../styles/program-services.css'
 
 const { selectedLength } = useProgramSelection()
 const { open } = useProgramBooking()
+const { lang, to, useT } = useLanguage()
+const t = useT('programs')
 const individualPrograms = computed(() => programs.filter((program) => !program.highlighted))
 const completeProgram = computed(() => programs.find((program) => program.highlighted)!)
 const savings = computed(() => calculateBundleSavings(selectedLength.value))
-const promotionDeadline = new Intl.DateTimeFormat('es-ES', {
+const promotionDeadline = computed(() => new Intl.DateTimeFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
   timeZone: 'UTC',
-}).format(new Date(`${freeInspectionPromotion.bookingDeadline}T00:00:00Z`))
+}).format(new Date(`${freeInspectionPromotion.bookingDeadline}T00:00:00Z`)))
+
+usePageMeta(computed(() => ({
+  es: programsI18n.es.meta.services,
+  en: programsI18n.en.meta.services,
+})))
+
+function text(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce((result, [key, value]) => result.split(`{${key}}`).join(String(value)), template)
+}
 
 function openGeneralBooking() {
   open({ programId: null, length: selectedLength.value })
 }
 
-const comparisonRows = [
-  { label: 'Responsable y seguimiento anual', values: ['Incluido', '—', '—', 'Incluido'] },
-  { label: 'Auditoría eléctrica y electrónica', values: ['—', 'Incluido', '—', 'Incluido'] },
-  { label: 'Dos limpiezas completas al año', values: ['—', '—', 'Incluido', 'Incluido'] },
-  { label: 'Comprobación previa a la salida', values: ['—', 'Incluido', '—', 'Incluido'] },
-  { label: 'Informe anual de la embarcación', values: ['Incluido', '—', '—', 'Incluido'] },
-]
+const comparisonRows = computed(() => [
+  { label: t.value.comparison.rows.care, values: [t.value.comparison.included, '—', '—', t.value.comparison.included] },
+  { label: t.value.comparison.rows.electronics, values: ['—', t.value.comparison.included, '—', t.value.comparison.included] },
+  { label: t.value.comparison.rows.cleaning, values: ['—', '—', t.value.comparison.included, t.value.comparison.included] },
+  { label: t.value.comparison.rows.preDeparture, values: ['—', t.value.comparison.included, '—', t.value.comparison.included] },
+  { label: t.value.comparison.rows.annualReport, values: [t.value.comparison.included, '—', '—', t.value.comparison.included] },
+])
 </script>
 
 <template>
   <main class="programs-surface">
     <section id="inicio" class="hero-section">
       <div class="hero-copy">
-        <p class="campaign-date">Programas anuales para cuidar tu embarcación</p>
-        <h1>Tú navegas.<br />Nosotros nos ocupamos.</h1>
-        <p class="hero-lead">
-          Mantenimiento, electrónica y limpieza coordinados en Rías Baixas, con una cuota mensual e IVA incluido.
-        </p>
+        <p class="campaign-date">{{ t.hero.eyebrow }}</p>
+        <h1>{{ t.hero.title }}</h1>
+        <p class="hero-lead">{{ t.hero.lead }}</p>
         <div class="hero-actions">
-          <a href="#programas" class="button button-primary">Ver programas y precios</a>
-          <a href="#revision" class="text-link">Cómo funciona la revisión gratuita</a>
+          <a href="#programas" class="button button-primary">{{ t.hero.primaryCta }}</a>
+          <a href="#revision" class="text-link">{{ t.hero.secondaryCta }}</a>
         </div>
       </div>
       <div class="hero-visual">
         <img
           :src="programVisuals.complete.src"
-          alt="Velero preparado para navegar por la ría"
+          :alt="t.hero.imageAlt"
           :width="programVisuals.complete.width"
           :height="programVisuals.complete.height"
           loading="eager"
@@ -61,8 +73,8 @@ const comparisonRows = [
           fetchpriority="high"
         />
         <div class="hero-caption">
-          <span>Una sola persona de contacto</span>
-          <strong>Todo coordinado para que puedas salir a navegar</strong>
+          <span>{{ t.hero.captionLabel }}</span>
+          <strong>{{ t.hero.captionText }}</strong>
         </div>
       </div>
     </section>
@@ -70,29 +82,26 @@ const comparisonRows = [
     <section id="revision" class="inspection-banner" aria-labelledby="inspection-title" data-promotion>
       <div class="inspection-number" aria-hidden="true">{{ freeInspectionPromotion.durationHours }}h</div>
       <div>
-        <p class="section-kicker">Tu punto de partida</p>
-        <h2 id="inspection-title">Una hora de revisión gratuita a bordo</h2>
-        <p>
-          Recibe un informe escrito, sin obligación de contratar. Para embarcaciones de
-          {{ freeInspectionPromotion.minimumLength }} pies o más en {{ freeInspectionPromotion.region }}.
-        </p>
+        <p class="section-kicker">{{ t.promotion.kicker }}</p>
+        <h2 id="inspection-title">{{ t.promotion.title }}</h2>
+        <p>{{ text(t.promotion.summary, { minimumLength: freeInspectionPromotion.minimumLength, region: freeInspectionPromotion.region }) }}</p>
       </div>
       <div class="inspection-value">
-        <span>Valor del informe</span>
+        <span>{{ t.promotion.valueLabel }}</span>
         <strong>{{ freeInspectionPromotion.reportValue }} €</strong>
-        <em>IVA incluido · {{ freeInspectionPromotion.slotLimit }} plazas</em>
-        <span>Reserva antes del {{ promotionDeadline }}</span>
-        <RouterLink to="/bases-revision-gratuita" data-promotion-terms>Consultar las bases</RouterLink>
+        <em>{{ text(t.promotion.valueMeta, { slotLimit: freeInspectionPromotion.slotLimit }) }}</em>
+        <span>{{ text(t.promotion.deadline, { deadline: promotionDeadline }) }}</span>
+        <RouterLink :to="to('/bases-revision-gratuita')" data-promotion-terms>{{ t.promotion.termsCta }}</RouterLink>
       </div>
     </section>
 
     <section id="programas" class="programs-section">
       <div class="section-heading">
         <div>
-          <p class="section-kicker">Cuota mensual · IVA incluido</p>
-          <h2>Elige cuánto quieres delegar</h2>
+          <p class="section-kicker">{{ t.listing.kicker }}</p>
+          <h2>{{ t.listing.title }}</h2>
         </div>
-        <p>Empieza por una necesidad concreta o reúne todo el cuidado de tu embarcación en un solo programa.</p>
+        <p>{{ t.listing.intro }}</p>
       </div>
 
       <ProgramLengthSelector v-model="selectedLength" :lengths="lengths" />
@@ -111,23 +120,23 @@ const comparisonRows = [
       </div>
 
       <p class="pricing-disclaimer">
-        Cuotas mensuales con IVA incluido para la eslora seleccionada. Los materiales, repuestos y trabajos externos requieren presupuesto y aprobación previa.
+        {{ t.pricingDisclaimer }}
       </p>
     </section>
 
     <section class="comparison-section" aria-labelledby="comparison-title">
       <div class="section-heading compact">
         <div>
-          <p class="section-kicker">Comparación rápida</p>
-          <h2 id="comparison-title">Una decisión fácil de entender</h2>
+          <p class="section-kicker">{{ t.comparison.kicker }}</p>
+          <h2 id="comparison-title">{{ t.comparison.title }}</h2>
         </div>
-        <p>Compara las prestaciones principales. Las horas disponibles cambian con la eslora seleccionada.</p>
+        <p>{{ t.comparison.intro }}</p>
       </div>
 
-      <div class="comparison" role="table" aria-label="Comparación de programas">
+      <div class="comparison" role="table" :aria-label="t.comparison.ariaLabel">
         <div class="comparison-row comparison-header" role="row">
-          <span role="columnheader">Qué necesitas</span>
-          <span v-for="program in programs" :key="program.id" role="columnheader">{{ program.name }}</span>
+          <span role="columnheader">{{ t.comparison.need }}</span>
+          <span v-for="program in programs" :key="program.id" role="columnheader">{{ t.programs[program.id].name }}</span>
         </div>
         <div v-for="row in comparisonRows" :key="row.label" class="comparison-row" role="row">
           <strong role="rowheader">{{ row.label }}</strong>
@@ -135,7 +144,7 @@ const comparisonRows = [
             v-for="(value, index) in row.values"
             :key="index"
             role="cell"
-            :class="{ included: value === 'Incluido' }"
+            :class="{ included: value === t.comparison.included }"
           >
             {{ value }}
           </span>
@@ -147,20 +156,16 @@ const comparisonRows = [
       <div class="guarantee-panel">
         <span class="guarantee-days">{{ commercialConditions.guarantee.maximumRepeats }}×</span>
         <div>
-          <p class="section-kicker">Garantía de servicio</p>
-          <h2>Repetimos el trabajo si el resultado no cumple.</h2>
-          <p>
-            La auditoría, limpieza o solución del proveedor afectada puede repetirse hasta
-            {{ commercialConditions.guarantee.maximumRepeats }} veces. Comunica la reclamación por escrito dentro de los
-            {{ commercialConditions.guarantee.claimDeadlineDays }} días siguientes.
-          </p>
+          <p class="section-kicker">{{ t.guarantee.kicker }}</p>
+          <h2>{{ t.guarantee.title }}</h2>
+          <p>{{ text(t.guarantee.body, { maximumRepeats: commercialConditions.guarantee.maximumRepeats, claimDeadlineDays: commercialConditions.guarantee.claimDeadlineDays }) }}</p>
         </div>
       </div>
 
       <figure class="testimonial-panel">
         <img
           :src="programVisuals.care.src"
-          alt="Embarcaciones protegidas en un varadero cubierto"
+          :alt="t.guarantee.imageAlt"
           :width="programVisuals.care.width"
           :height="programVisuals.care.height"
           loading="lazy"
@@ -168,19 +173,19 @@ const comparisonRows = [
         />
         <figcaption>
           <blockquote>
-            Un plan de invierno coordinó a varios especialistas, comparó varaderos y permitió elegir una plaza interior con mejor precio y botadura flexible.
+            {{ t.case.quote }}
           </blockquote>
-          <p><strong>Caso real anonimizado</strong><br />Dos embarcaciones, una sola planificación</p>
+          <p><strong>{{ t.case.label }}</strong><br />{{ t.case.caption }}</p>
         </figcaption>
       </figure>
     </section>
 
     <section id="contacto" class="contact-section">
-      <p class="section-kicker">Revisión inicial gratuita · una hora</p>
-      <h2>Empieza por conocer el estado real de tu embarcación.</h2>
-      <p>Elige una fecha y una hora preferidas. Boat Solutions confirmará personalmente la disponibilidad.</p>
+      <p class="section-kicker">{{ t.finalCta.kicker }}</p>
+      <h2>{{ t.finalCta.title }}</h2>
+      <p>{{ t.finalCta.body }}</p>
       <button type="button" class="button button-light" data-booking-cta="services-final" @click="openGeneralBooking">
-        Solicitar revisión gratuita
+        {{ t.finalCta.button }}
       </button>
       <div class="contact-details">
         <span>boat-solutions.es</span>

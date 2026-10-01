@@ -3,6 +3,7 @@ import { flushPromises, mount } from '@vue/test-utils'
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { defineComponent } from 'vue'
 import { RouterView } from 'vue-router'
+import { createHead } from '@unhead/vue/client'
 import router from '../index'
 
 beforeAll(() => {
@@ -74,7 +75,7 @@ describe('program routes', () => {
     const wrapper = mount(defineComponent({
       components: { RouterView },
       template: '<RouterView />',
-    }), { global: { plugins: [router] } })
+    }), { global: { plugins: [router, createHead()] } })
     await flushPromises()
 
     expect(wrapper.get('h1').text()).toBe('Plan Limpieza y Detailing')

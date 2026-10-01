@@ -1,61 +1,75 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useLanguage } from '../composables/useLanguage'
+import { usePageMeta } from '../composables/useMeta'
 import { freeInspectionPromotion as promotion } from '../data/programPromotion'
+import { i18n } from '../i18n'
 import '../styles/programs.css'
 
-const durationLabel = promotion.durationHours === 1
-  ? 'Una hora'
-  : `${promotion.durationHours} horas`
+const { lang, to, useT } = useLanguage()
+const t = useT('promotion')
+const durationLabel = computed(() => promotion.durationHours === 1
+  ? t.value.durationOne
+  : t.value.durationMany.replace('{durationHours}', String(promotion.durationHours)))
 
-const formattedDeadline = new Intl.DateTimeFormat('es-ES', {
+const formattedDeadline = computed(() => new Intl.DateTimeFormat(lang.value === 'en' ? 'en-GB' : 'es-ES', {
   day: 'numeric',
   month: 'long',
   year: 'numeric',
   timeZone: 'UTC',
-}).format(new Date(`${promotion.bookingDeadline}T00:00:00Z`))
+}).format(new Date(`${promotion.bookingDeadline}T00:00:00Z`)))
+
+usePageMeta(computed(() => ({
+  es: i18n.es.promotion.meta,
+  en: i18n.en.promotion.meta,
+})))
+
+function text(template: string, values: Record<string, string | number>) {
+  return Object.entries(values).reduce((result, [key, value]) => result.split(`{${key}}`).join(String(value)), template)
+}
 </script>
 
 <template>
   <main class="programs-surface promotion-terms">
     <header class="promotion-terms__header">
-      <p class="section-kicker">Revisión gratuita</p>
-      <h1>Bases de la promoción</h1>
-      <p>
-        Solicita una revisión general de tu embarcación, con informe escrito. Sin obligación de contratar.
-      </p>
+      <p class="section-kicker">{{ t.kicker }}</p>
+      <h1>{{ t.title }}</h1>
+      <p>{{ t.intro }}</p>
+      <p v-if="promotion.requiresLegalReview" class="program-legal-review" data-legal-review role="note">{{ t.legalReview }}</p>
     </header>
 
     <section aria-labelledby="promotion-conditions-title">
-      <h2 id="promotion-conditions-title">Condiciones de la revisión</h2>
+      <h2 id="promotion-conditions-title">{{ t.conditionsTitle }}</h2>
       <ul class="promotion-terms__conditions">
         <li data-promotion-condition>
-          {{ durationLabel }} de revisión general a bordo. Al finalizar recibirás un informe escrito.
+          {{ text(t.conditions.duration, { durationLabel }) }}
         </li>
         <li data-promotion-condition>
-          El servicio tiene un valor de {{ promotion.reportValue }} €, IVA incluido.
+          {{ text(t.conditions.value, { reportValue: promotion.reportValue }) }}
         </li>
         <li data-promotion-condition>
-          La promoción está limitada a {{ promotion.slotLimit }} plazas.
+          {{ text(t.conditions.slots, { slotLimit: promotion.slotLimit }) }}
         </li>
         <li data-promotion-condition>
-          Disponible para embarcaciones de {{ promotion.minimumLength }} pies o más.
+          {{ text(t.conditions.minimumLength, { minimumLength: promotion.minimumLength }) }}
         </li>
         <li data-promotion-condition>
-          El servicio se presta exclusivamente en {{ promotion.region }}.
+          {{ text(t.conditions.region, { region: promotion.region }) }}
         </li>
         <li data-promotion-condition>
-          La reserva debe solicitarse antes del {{ formattedDeadline }}.
+          {{ text(t.conditions.deadline, { deadline: formattedDeadline }) }}
         </li>
         <li v-if="promotion.perOwnerAndBoat" data-promotion-condition>
-          Una revisión por propietario y embarcación.
+          {{ t.conditions.onePerOwnerAndBoat }}
         </li>
       </ul>
     </section>
 
     <section aria-labelledby="promotion-privacy-title">
-      <h2 id="promotion-privacy-title">Privacidad</h2>
+      <h2 id="promotion-privacy-title">{{ t.privacyTitle }}</h2>
       <p>
-        El tratamiento de tus datos se rige por nuestra
-        <a href="https://boat-solutions.es/politica-de-privacidad">Política de Privacidad</a>.
+        {{ t.privacyPrefix }}
+        <RouterLink :to="to('/politica-de-privacidad')">{{ t.privacyLink }}</RouterLink>.
       </p>
     </section>
   </main>

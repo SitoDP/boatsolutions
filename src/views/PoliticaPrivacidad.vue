@@ -24,6 +24,13 @@
           <p>{{ t.s2p2 }}</p>
           <p>{{ t.s2p3 }} <a href="mailto:info@boat-solutions.es">info@boat-solutions.es</a>.</p>
 
+          <h2>{{ t.bookingTitle }}</h2>
+          <p>{{ t.bookingFields }}</p>
+          <p>{{ t.bookingPurpose }}</p>
+          <p>{{ t.bookingRetention }}</p>
+          <p>{{ t.bookingProcessors }}</p>
+          <p>{{ t.bookingRights }} <a href="mailto:info@boat-solutions.es">info@boat-solutions.es</a>.</p>
+
           <h2>{{ t.s3Title }}</h2>
           <p>{{ t.s3intro }}</p>
           <ul>
@@ -47,7 +54,7 @@
             <p><strong>{{ t.contactController }}</strong> Boat Solutions International S.L.</p>
             <p><strong>{{ t.contactEmail }}</strong> <a href="mailto:info@boat-solutions.es">info@boat-solutions.es</a></p>
             <p><strong>{{ t.contactPhone }}</strong> <a href="tel:+34676625595">+34 676 625 595</a></p>
-            <p><strong>{{ t.contactLocation }}</strong> Vigo, Pontevedra, España</p>
+            <p><strong>{{ t.contactLocation }}</strong> {{ t.contactLocationValue }}</p>
           </div>
 
         </div>
@@ -65,7 +72,7 @@ const { lang } = useLanguage()
 
 const t = computed(() => lang.value === 'en' ? {
   title: 'Privacy Policy',
-  updated: 'Last updated: January 2025',
+  updated: 'Last updated: October 2026',
   lead: 'The BSI – Boat Solutions International website is owned by Boat Solutions International S.L., which acts as the data controller for your personal data.',
   intro1: 'We have adopted this Privacy Policy, which determines how we process information collected by BSI – Boat Solutions International, and explains why we need to collect certain personal data about you. You should therefore read this Privacy Policy before using the website.',
   intro2: 'We care about your personal data and are committed to ensuring its confidentiality and security.',
@@ -76,6 +83,12 @@ const t = computed(() => lang.value === 'en' ? {
   s2p1: 'Our priority is the security of user data. We therefore only process the minimum data necessary to maintain the website. Automatically collected information is used solely to identify potential cases of abuse and to establish statistical information about website usage. This statistical information is not aggregated in a way that would identify any individual user.',
   s2p2: 'You may visit the website without telling us who you are or revealing any information that could identify you. However, if you wish to use any of the website\'s features, receive our newsletter, or provide us with details via a form, you may need to provide us with personal data such as your email address, name, city of residence, organisation or phone number.',
   s2p3: 'You may choose not to provide us with your personal data, but in that case you may not be able to use some of the website\'s features. Users who have questions about what information is mandatory may contact us at',
+  bookingTitle: 'Program booking requests',
+  bookingFields: 'For program booking requests, we process the selected program and boat-length band, preferred date and time, name, email address, phone number, boat type, optional comments, and the privacy-consent timestamp.',
+  bookingPurpose: 'Handle the booking request and pre-contractual communications, including checking availability, contacting you about the requested inspection and preparing the requested service information.',
+  bookingRetention: 'We retain booking-request data only for as long as reasonably necessary to handle the request and any resulting pre-contractual relationship, and afterwards only where applicable legal obligations or the establishment, exercise or defence of claims require it. Retention periods may therefore depend on whether the request leads to a contract.',
+  bookingProcessors: 'Service providers may process data on our behalf where needed to operate the booking workflow and communications. This may include Google services used to receive or manage form submissions, where applicable, under the provider arrangements and safeguards in force.',
+  bookingRights: 'You may exercise your data-protection rights, withdraw consent where consent is the applicable basis, or ask about this processing by contacting',
   s3Title: 'Your rights',
   s3intro: 'If you are a resident of the European Economic Area, you have the following rights regarding your personal data:',
   s3rights: [
@@ -101,9 +114,10 @@ const t = computed(() => lang.value === 'en' ? {
   contactEmail: 'Contact email:',
   contactPhone: 'Phone:',
   contactLocation: 'Location:',
+  contactLocationValue: 'Vigo, Pontevedra, Spain',
 } : {
   title: 'Política de Privacidad',
-  updated: 'Última actualización: enero de 2025',
+  updated: 'Última actualización: octubre de 2026',
   lead: 'El sitio web de BSI - Boat Solutions International es propiedad de Boat Solutions International S.L., que actúa como responsable del tratamiento de sus datos personales.',
   intro1: 'Hemos adoptado esta Política de Privacidad, que determina cómo tratamos la información recopilada por BSI - Boat Solutions International, y explica los motivos por los que necesitamos recopilar ciertos datos personales sobre usted. Por tanto, debe leer esta Política de Privacidad antes de utilizar el sitio web.',
   intro2: 'Nos preocupamos por sus datos personales y nos comprometemos a garantizar su confidencialidad y seguridad.',
@@ -114,6 +128,12 @@ const t = computed(() => lang.value === 'en' ? {
   s2p1: 'Nuestra prioridad es la seguridad de los datos de los usuarios. Por ello, únicamente tratamos los datos mínimos imprescindibles para mantener el sitio web. La información recopilada automáticamente se utiliza exclusivamente para identificar posibles casos de abuso y establecer información estadística sobre el uso del sitio web. Esta información estadística no se agrega de manera que permita identificar a ningún usuario concreto.',
   s2p2: 'Puede visitar el sitio web sin indicarnos quién es ni revelar ninguna información que permita identificarle. Sin embargo, si desea utilizar alguna de las funciones del sitio web, recibir nuestra newsletter o proporcionarnos detalles a través de un formulario, puede que necesite facilitarnos datos personales como su correo electrónico, nombre, apellidos, ciudad de residencia, organización o número de teléfono.',
   s2p3: 'Puede optar por no facilitarnos sus datos personales, pero en ese caso es posible que no pueda utilizar algunas funciones del sitio web. Los usuarios que tengan dudas sobre qué información es obligatoria pueden contactarnos en',
+  bookingTitle: 'Solicitudes de reserva de programas',
+  bookingFields: 'En las solicitudes de reserva de programas tratamos el programa y la franja de eslora seleccionados, la fecha y hora preferidas, nombre, correo electrónico, teléfono, tipo de embarcación, comentarios opcionales y la marca temporal del consentimiento de privacidad.',
+  bookingPurpose: 'Gestionar la solicitud de reserva y las comunicaciones precontractuales, incluida la comprobación de disponibilidad, el contacto sobre la revisión solicitada y la preparación de la información del servicio pedido.',
+  bookingRetention: 'Conservaremos los datos de la solicitud solo durante el tiempo razonablemente necesario para gestionarla y atender la posible relación precontractual; después, únicamente cuando lo exijan obligaciones legales aplicables o la formulación, ejercicio o defensa de reclamaciones. Por ello, el plazo puede variar según la solicitud llegue o no a convertirse en contrato.',
+  bookingProcessors: 'Los proveedores de servicios podrán tratar datos por cuenta de Boat Solutions cuando sea necesario para operar el flujo de reservas y las comunicaciones. Esto puede incluir, cuando corresponda, servicios de Google utilizados para recibir o gestionar envíos de formularios, bajo los acuerdos y garantías vigentes del proveedor.',
+  bookingRights: 'Puede ejercer sus derechos de protección de datos, retirar el consentimiento cuando esa sea la base aplicable o consultar este tratamiento escribiendo a',
   s3Title: 'Sus derechos',
   s3intro: 'Si es residente en el Espacio Económico Europeo, tiene los siguientes derechos en relación con sus datos personales:',
   s3rights: [
@@ -139,6 +159,7 @@ const t = computed(() => lang.value === 'en' ? {
   contactEmail: 'Email de contacto:',
   contactPhone: 'Teléfono:',
   contactLocation: 'Ubicación:',
+  contactLocationValue: 'Vigo, Pontevedra, España',
 })
 
 usePageMeta({

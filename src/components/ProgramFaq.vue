@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, useId } from 'vue'
+import { useLanguage } from '../composables/useLanguage'
 
 export interface ProgramFaqItem {
   question: string
@@ -10,6 +11,8 @@ defineProps<{ items: ProgramFaqItem[] }>()
 
 const openItem = ref<number | null>(null)
 const componentId = useId()
+const { useT } = useLanguage()
+const t = useT('programs')
 
 function answerId(index: number): string {
   return `${componentId}-faq-answer-${index}`
@@ -27,8 +30,8 @@ function toggle(index: number) {
 <template>
   <section class="program-faq" data-detail-faq aria-labelledby="program-faq-title">
     <div class="detail-section-heading">
-      <p class="section-kicker">Preguntas frecuentes</p>
-      <h2 id="program-faq-title">Lo que conviene saber antes de empezar</h2>
+      <p class="section-kicker">{{ t.detail.faq.kicker }}</p>
+      <h2 id="program-faq-title">{{ t.detail.faq.title }}</h2>
     </div>
     <div class="program-faq-list">
       <article v-for="(item, index) in items" :key="item.question" class="program-faq-item">
