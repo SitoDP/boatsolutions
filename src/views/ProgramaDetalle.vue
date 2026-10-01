@@ -50,7 +50,7 @@ function openProgramBooking() {
 </script>
 
 <template>
-  <main class="programs-surface detail-page detail-page-real" :class="`detail-${program.id}`">
+  <div class="programs-surface detail-page detail-page-real" :class="`detail-${program.id}`">
     <section class="detail-hero" data-detail-hero>
       <div class="detail-hero-copy">
         <RouterLink :to="to('/servicios#programas')" class="back-link">{{ t.detail.backToPrograms }}</RouterLink>
@@ -171,5 +171,5 @@ function openProgramBooking() {
       <RouterLink :to="to(`/programas/${previous.slug}`)"><small>{{ t.detail.pagination.previous }}</small><strong>{{ t.programs[previous.id].name }}</strong></RouterLink>
       <RouterLink :to="to(`/programas/${next.slug}`)"><small>{{ t.detail.pagination.next }}</small><strong>{{ t.programs[next.id].name }}</strong></RouterLink>
     </nav>
-  </main>
+  </div>
 </template>

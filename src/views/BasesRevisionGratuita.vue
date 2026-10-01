@@ -30,7 +30,7 @@ function text(template: string, values: Record<string, string | number>) {
 </script>
 
 <template>
-  <main class="programs-surface promotion-terms">
+  <div class="programs-surface promotion-terms">
     <header class="promotion-terms__header">
       <p class="section-kicker">{{ t.kicker }}</p>
       <h1>{{ t.title }}</h1>
@@ -72,5 +72,5 @@ function text(template: string, values: Record<string, string | number>) {
         <RouterLink :to="to('/politica-de-privacidad')">{{ t.privacyLink }}</RouterLink>.
       </p>
     </section>
-  </main>
+  </div>
 </template>

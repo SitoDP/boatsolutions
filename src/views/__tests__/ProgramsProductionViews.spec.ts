@@ -31,7 +31,8 @@ describe('production program views', () => {
     const wrapper = mount(Servicios, { global: { plugins: [router, createHead()], stubs: { RouterLink: RouterLinkStub } } })
     const cards = wrapper.findAll('[data-program]')
 
-    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.classes()).toContain('programs-surface')
     expect(cards.map((card) => card.attributes('data-price'))).toEqual(['215', '130', '85', '360'])
     expect(cards.every((card) => card.text().includes('IVA incluido'))).toBe(true)
     await wrapper.get('[data-length="50"]').trigger('click')
@@ -55,7 +56,8 @@ describe('production program views', () => {
     const price = conditions.get('.program-conditions-price').element
     const selector = conditions.get('.length-selector').element
 
-    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.classes()).toContain('programs-surface')
     expect(price.compareDocumentPosition(selector) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
     expect(conditions.text()).toContain('IVA incluido')
     expect(conditions.text()).toContain('14 días naturales')
@@ -63,7 +65,8 @@ describe('production program views', () => {
 
   it('publishes all seven free-inspection conditions and the privacy policy', () => {
     const wrapper = mount(BasesRevisionGratuita, { global: { plugins: [router, createHead()] } })
-    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(wrapper.element.tagName).toBe('DIV')
+    expect(wrapper.classes()).toContain('programs-surface')
     expect(wrapper.findAll('[data-promotion-condition]')).toHaveLength(7)
     expect(wrapper.text()).toContain('120 €')
     expect(wrapper.text()).toContain('IVA incluido')

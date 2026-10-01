@@ -162,7 +162,10 @@ describe('program localization routes', () => {
   })
 
   it('renders the submitted booking success state in English', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 200 }))
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(
+      JSON.stringify({ ok: true }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } },
+    ))
     const wrapper = await mountEnglishBookingModal()
 
     await wrapper.get('#booking-name').setValue('Alex Morgan')

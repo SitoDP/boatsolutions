@@ -51,7 +51,7 @@ const comparisonRows = computed(() => [
 </script>
 
 <template>
-  <main class="programs-surface">
+  <div class="programs-surface">
     <section id="inicio" class="hero-section">
       <div class="hero-copy">
         <p class="campaign-date">{{ t.hero.eyebrow }}</p>
@@ -193,5 +193,5 @@ const comparisonRows = computed(() => [
         <span>info@boat-solutions.es</span>
       </div>
     </section>
-  </main>
+  </div>
 </template>
