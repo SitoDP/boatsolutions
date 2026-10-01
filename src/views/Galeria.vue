@@ -73,11 +73,11 @@ const t = useT('galeria')
 usePageMeta({
   es: {
     title: 'Galería',
-    description: 'Galería de proyectos náuticos: gestión, traslados, detailing y experiencias en las Rías Baixas.',
+    description: 'Galería de trabajos de mantenimiento, electrónica, limpieza y puesta a punto en las Rías Baixas.',
   },
   en: {
     title: 'Gallery',
-    description: 'Nautical project gallery: management, transport, detailing and experiences in Galicia.',
+    description: 'Gallery of maintenance, electronics, cleaning and boat preparation work in Galicia.',
   },
 })
 
@@ -98,7 +98,7 @@ const images: GalleryImage[] = [
   { src: BASE + 'dji_fly_20250715_135058_892_1752580280260_photo_optimized-pVFBPFMOjxZr06es.JPG', alt: 'Fotografia aerea de yate' },
   { src: BASE + 'img_1747-GatsfpyBmklZgI6y.jpg', alt: 'Servicio nautico profesional' },
   { src: imgDulcinea1, alt: 'Dulcinea en el puerto de Vigo' },
-  { src: imgDulcineaConsulting, alt: 'Dulcinea — Yacht Consulting' },
+  { src: imgDulcineaConsulting, alt: 'Dulcinea durante una revisión técnica' },
   { src: imgMarcela1, alt: 'Marcela en el mar' },
   { src: imgMarcela2, alt: 'Marcela — traslado' },
   { src: imgDulcineaAerea, alt: 'Vista aérea de Dulcinea navegando' },

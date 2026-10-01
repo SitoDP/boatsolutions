@@ -535,7 +535,6 @@ a:focus-visible {
 .contact-section h2 { max-width: 870px; margin: 0 auto; }
 .contact-section > p:not(.section-kicker) { margin: 24px 0 30px; color: rgba(255,255,255,.72); }
 .button-light { background: var(--white); color: var(--ocean-deep); }
-.contact-details { margin-top: 46px; display: flex; justify-content: center; flex-wrap: wrap; gap: 12px 34px; color: rgba(255,255,255,.7); font-size: .78rem; }
 
 footer {
   padding: 24px max(24px, calc((100vw - 1180px) / 2));

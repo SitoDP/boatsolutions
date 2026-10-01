@@ -67,11 +67,11 @@ import { usePageMeta } from '../composables/useMeta'
 usePageMeta({
   es: {
     title: 'Proyectos',
-    description: 'Casos reales de gestión, mantenimiento y traslado de embarcaciones por Boat Solutions International.',
+    description: 'Casos reales de mantenimiento, electrónica, limpieza y puesta a punto coordinados por Boat Solutions International.',
   },
   en: {
     title: 'Projects',
-    description: 'Real cases of yacht management, maintenance and transport delivered by Boat Solutions International.',
+    description: 'Real maintenance, electronics, cleaning and preparation projects coordinated by Boat Solutions International.',
   },
 })
 

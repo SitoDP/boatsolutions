@@ -123,11 +123,11 @@ import { usePageMeta } from '../composables/useMeta'
 usePageMeta({
   es: {
     title: 'Sobre nosotros',
-    description: 'Alejandro y Calixto, especialistas en gestión náutica, traslados y detailing en las Rías Baixas.',
+    description: 'Alejandro y Calixto, especialistas en mantenimiento, electrónica, limpieza y coordinación náutica en las Rías Baixas.',
   },
   en: {
     title: 'About us',
-    description: 'Alejandro and Calixto, experts in yacht management, transport and detailing in Galicia, Spain.',
+    description: 'Alejandro and Calixto, specialists in maintenance, electronics, cleaning and nautical coordination in Galicia, Spain.',
   },
 })
 

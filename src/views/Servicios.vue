@@ -188,11 +188,6 @@ const comparisonRows = computed(() => [
       <button type="button" class="button button-light" data-booking-cta="services-final" @click="openGeneralBooking">
         {{ t.finalCta.button }}
       </button>
-      <div class="contact-details">
-        <span>boat-solutions.es</span>
-        <span>676 625 595</span>
-        <span>info@boat-solutions.es</span>
-      </div>
     </section>
   </div>
 </template>

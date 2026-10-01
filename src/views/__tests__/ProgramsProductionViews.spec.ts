@@ -47,6 +47,19 @@ describe('production program views', () => {
     expect(useProgramBooking().context.value).toEqual({ programId: 'ready', length: 45 })
   })
 
+  it('keeps the final CTA copy and button without repeating contact details', () => {
+    const wrapper = mount(Servicios, { global: { plugins: [router, createHead()], stubs: { RouterLink: RouterLinkStub } } })
+    const finalCta = wrapper.get('#contacto')
+
+    expect(finalCta.get('.section-kicker').text()).toBe('Revisión inicial gratuita · una hora')
+    expect(finalCta.get('h2').text()).toBe('Empieza por conocer el estado real de tu embarcación.')
+    expect(finalCta.get('p:not(.section-kicker)').text()).toBe('Elige una fecha y una hora preferidas. Boat Solutions confirmará personalmente la disponibilidad.')
+    expect(finalCta.get('[data-booking-cta="services-final"]').text()).toBe('Solicitar revisión gratuita')
+    expect(finalCta.text()).not.toContain('boat-solutions.es')
+    expect(finalCta.text()).not.toContain('676 625 595')
+    expect(finalCta.text()).not.toContain('info@boat-solutions.es')
+  })
+
   it('renders detail terms with the length selector directly below the quota', () => {
     const wrapper = mount(ProgramaDetalle, {
       props: { programId: 'care' },
