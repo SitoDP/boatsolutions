@@ -30,7 +30,6 @@ jobs:
       - run: npm run build
         env:
           VITE_SCRIPT_URL: ${{ secrets.VITE_SCRIPT_URL }}
-          VITE_CALC_CONFIG_URL: ${{ vars.VITE_CALC_CONFIG_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

@@ -11,7 +11,7 @@ npm run preview          # Preview built dist/
 npm run type-check       # vue-tsc only, no emit
 npm run test             # Vitest watch mode
 npm run test:run         # Vitest single run
-npm run test:run -- src/components/__tests__/BookingModal.spec.ts   # Single file
+npm run test:run -- src/components/__tests__/ProgramBookingFlow.spec.ts   # Single file
 ```
 
 Always run `npm run build` (not just `type-check`) before committing — `vue-tsc` catches template-level type errors that the editor doesn't.
@@ -41,7 +41,7 @@ Always run `npm run build` (not just `type-check`) before committing — `vue-ts
 
 ### External integrations
 
-- **Forms** (`BookingModal`, contact) post to a Google Apps Script endpoint (`VITE_SCRIPT_URL`) using `mode: 'no-cors'`. The script differentiates submissions by the `type` field (`reserva`, etc.). When adding a new form type, also update the Apps Script handler.
+- **Forms** (`ProgramBookingModal`, contact) post to a Google Apps Script endpoint (`VITE_SCRIPT_URL`) using `mode: 'no-cors'`. The script differentiates submissions by the `type` field (`reserva`, etc.). When adding a new form type, also update the Apps Script handler.
 
 ## Conventions
 
