@@ -16,65 +16,68 @@
           @mouseenter="servicesOpen = true"
           @mouseleave="servicesOpen = false"
         >
-          <button class="nav-link nav-link-btn" :class="{ active: isServicesActive }">
+          <router-link data-services-menu :to="to('/servicios')" class="nav-link nav-link-btn" :class="{ active: isServicesActive }" @click="close">
             {{ lbl.services }}
             <svg class="chevron" :class="{ rotated: servicesOpen }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
               <polyline points="6 9 12 15 18 9"/>
             </svg>
-          </button>
+          </router-link>
           <Transition name="dropdown">
             <div v-show="servicesOpen" class="dropdown-menu">
-              <router-link :to="to('/yacht-consulting')" class="dropdown-item" @click="close">
-                <div class="dropdown-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>
-                </div>
-                <div>
-                  <span class="dropdown-label">Yacht Consulting</span>
-                  <span class="dropdown-desc">{{ lbl.consultingDesc }}</span>
-                </div>
-              </router-link>
-              <router-link :to="to('/yacht-management')" class="dropdown-item" @click="close">
+              <router-link :to="to('/programas/mantenimiento-delegado')" class="dropdown-item" @click="close">
                 <div class="dropdown-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
                 </div>
                 <div>
-                  <span class="dropdown-label">Yacht Management</span>
-                  <span class="dropdown-desc">{{ lbl.managementDesc }}</span>
+                  <span class="dropdown-label">{{ lbl.careProgram }}</span>
+                  <span class="dropdown-desc">{{ lbl.careProgramDesc }}</span>
                 </div>
               </router-link>
-              <router-link :to="to('/yacht-logistics')" class="dropdown-item" @click="close">
+              <router-link :to="to('/programas/electronica-asesorada')" class="dropdown-item" @click="close">
                 <div class="dropdown-icon">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
                 </div>
                 <div>
-                  <span class="dropdown-label">Yacht Logistics</span>
-                  <span class="dropdown-desc">{{ lbl.logisticsDesc }}</span>
+                  <span class="dropdown-label">{{ lbl.navigationProgram }}</span>
+                  <span class="dropdown-desc">{{ lbl.navigationProgramDesc }}</span>
                 </div>
               </router-link>
-              <router-link :to="to('/yacht-detailing')" class="dropdown-item" @click="close">
+              <router-link :to="to('/programas/limpieza-detailing')" class="dropdown-item" @click="close">
                 <div class="dropdown-icon">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
                 </div>
                 <div>
-                  <span class="dropdown-label">Yacht Detailing</span>
-                  <span class="dropdown-desc">{{ lbl.detailingDesc }}</span>
+                  <span class="dropdown-label">{{ lbl.cleaningProgram }}</span>
+                  <span class="dropdown-desc">{{ lbl.cleaningProgramDesc }}</span>
+                </div>
+              </router-link>
+              <router-link :to="to('/programas/listo-para-zarpar')" class="dropdown-item" @click="close">
+                <div class="dropdown-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-9 9 9"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+                </div>
+                <div>
+                  <span class="dropdown-label">{{ lbl.completeProgram }}</span>
+                  <span class="dropdown-desc">{{ lbl.completeProgramDesc }}</span>
                 </div>
               </router-link>
             </div>
           </Transition>
         </div>
 
+        <router-link data-logistics-link :to="to('/yacht-logistics')" class="nav-link nav-link-desktop-logistics" @click="close">{{ lbl.logistics }}</router-link>
+
         <router-link :to="to('/galeria')" class="nav-link" @click="close">{{ lbl.gallery }}</router-link>
         <router-link :to="to('/contacto')" class="nav-link" @click="close">{{ lbl.contact }}</router-link>
 
         <!-- Mobile-only services list -->
         <div class="nav-services-mobile">
-          <p class="nav-services-title">{{ lbl.services }}</p>
-          <router-link :to="to('/yacht-consulting')" class="nav-link nav-link-sub" @click="close">Yacht Consulting</router-link>
-          <router-link :to="to('/yacht-management')" class="nav-link nav-link-sub" @click="close">Yacht Management</router-link>
-          <router-link :to="to('/yacht-logistics')" class="nav-link nav-link-sub" @click="close">Yacht Logistics</router-link>
-          <router-link :to="to('/yacht-detailing')" class="nav-link nav-link-sub" @click="close">Yacht Detailing</router-link>
+          <router-link :to="to('/servicios')" class="nav-services-title" @click="close">{{ lbl.services }}</router-link>
+          <router-link :to="to('/programas/mantenimiento-delegado')" class="nav-link nav-link-sub" @click="close">{{ lbl.careProgram }}</router-link>
+          <router-link :to="to('/programas/electronica-asesorada')" class="nav-link nav-link-sub" @click="close">{{ lbl.navigationProgram }}</router-link>
+          <router-link :to="to('/programas/limpieza-detailing')" class="nav-link nav-link-sub" @click="close">{{ lbl.cleaningProgram }}</router-link>
+          <router-link :to="to('/programas/listo-para-zarpar')" class="nav-link nav-link-sub" @click="close">{{ lbl.completeProgram }}</router-link>
         </div>
+        <router-link data-logistics-mobile-link :to="to('/yacht-logistics')" class="nav-link nav-link-mobile-logistics" @click="close">{{ lbl.logistics }}</router-link>
 
       </nav>
 
@@ -111,10 +114,18 @@ const lbl = useT('header')
 const menuOpen = ref(false)
 const servicesOpen = ref(false)
 
-const serviceRoutes = ['/yacht-consulting', '/yacht-management', '/yacht-logistics', '/yacht-detailing']
+const serviceRoutes = new Set([
+  '/servicios',
+  '/programas/mantenimiento-delegado',
+  '/programas/electronica-asesorada',
+  '/programas/limpieza-detailing',
+  '/programas/listo-para-zarpar',
+  '/bases-revision-gratuita',
+])
+
 const isServicesActive = computed(() => {
   const normalizedPath = route.path.replace(/^\/en/, '') || '/'
-  return serviceRoutes.includes(normalizedPath)
+  return serviceRoutes.has(normalizedPath)
 })
 
 const close = () => {
@@ -403,6 +414,7 @@ const close = () => {
 
 /* ── Mobile services ── */
 .nav-services-mobile { display: none; }
+.nav-link-mobile-logistics { display: none; }
 
 @media (max-width: 1024px) {
   .menu-toggle { display: flex; }
@@ -459,6 +471,9 @@ const close = () => {
     margin: 4px 0;
     gap: 2px;
   }
+
+  .nav-link-desktop-logistics { display: none; }
+  .nav-link-mobile-logistics { display: block; }
 
   .nav-services-title {
     font-family: var(--font-heading);

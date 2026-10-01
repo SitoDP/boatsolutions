@@ -39,7 +39,12 @@
           <router-link :to="to('/nosotros')">{{ lbl.about }}</router-link>
           <router-link :to="to('/proyectos')">{{ lbl.projects }}</router-link>
           <router-link :to="to('/galeria')">{{ lbl.gallery }}</router-link>
-          <router-link :to="to('/yacht-management')">Yacht Management</router-link>
+          <router-link :to="to('/servicios')">{{ lbl.services }}</router-link>
+          <router-link :to="to('/programas/mantenimiento-delegado')">{{ lbl.careProgram }}</router-link>
+          <router-link :to="to('/programas/electronica-asesorada')">{{ lbl.navigationProgram }}</router-link>
+          <router-link :to="to('/programas/limpieza-detailing')">{{ lbl.cleaningProgram }}</router-link>
+          <router-link :to="to('/programas/listo-para-zarpar')">{{ lbl.completeProgram }}</router-link>
+          <router-link :to="to('/yacht-logistics')">{{ lbl.logistics }}</router-link>
           <router-link :to="to('/contacto')">{{ lbl.contact }}</router-link>
         </div>
 

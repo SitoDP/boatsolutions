@@ -7,13 +7,26 @@ const Nosotros = () => import('../views/Nosotros.vue')
 const Proyectos = () => import('../views/Proyectos.vue')
 const Galeria = () => import('../views/Galeria.vue')
 const Contacto = () => import('../views/Contacto.vue')
-const YachtConsulting = () => import('../views/YachtConsulting.vue')
-const YachtManagement = () => import('../views/YachtManagement.vue')
 const YachtLogistics = () => import('../views/YachtLogistics.vue')
-const YachtDetailing = () => import('../views/YachtDetailing.vue')
+const Servicios = () => import('../views/Servicios.vue')
+const ProgramaDetalle = () => import('../views/ProgramaDetalle.vue')
+const BasesRevisionGratuita = () => import('../views/BasesRevisionGratuita.vue')
 const PoliticaPrivacidad = () => import('../views/PoliticaPrivacidad.vue')
 const TerminosCondiciones = () => import('../views/TerminosCondiciones.vue')
 const NotFound = () => import('../views/NotFound.vue')
+
+const programRoutes = [
+  { slug: 'mantenimiento-delegado', programId: 'care' },
+  { slug: 'electronica-asesorada', programId: 'navigation' },
+  { slug: 'limpieza-detailing', programId: 'ready' },
+  { slug: 'listo-para-zarpar', programId: 'complete' },
+] as const
+
+const legacyProgramRedirects = [
+  { slug: 'barco-sin-preocupaciones', destination: 'mantenimiento-delegado' },
+  { slug: 'navega-seguro', destination: 'electronica-asesorada' },
+  { slug: 'zarpa-cuando-quieras', destination: 'listo-para-zarpar' },
+] as const
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,24 +36,48 @@ const router = createRouter({
     { path: '/proyectos', name: 'proyectos', component: Proyectos },
     { path: '/galeria', name: 'galeria', component: Galeria },
     { path: '/contacto', name: 'contacto', component: Contacto },
-    { path: '/yacht-consulting', name: 'yacht-consulting', component: YachtConsulting },
-    { path: '/yacht-management', name: 'yacht-management', component: YachtManagement },
+    { path: '/servicios', name: 'services', component: Servicios },
+    ...programRoutes.map(({ slug, programId }) => ({
+      path: `/programas/${slug}`,
+      name: `program-${programId}`,
+      component: ProgramaDetalle,
+      props: { programId },
+      meta: { programId },
+    })),
+    { path: '/bases-revision-gratuita', name: 'promotion-terms', component: BasesRevisionGratuita },
+    ...legacyProgramRedirects.map(({ slug, destination }) => ({
+      path: `/programas/${slug}`,
+      redirect: `/programas/${destination}`,
+    })),
+    { path: '/yacht-consulting', redirect: '/servicios' },
+    { path: '/yacht-management', redirect: '/programas/mantenimiento-delegado' },
     { path: '/yacht-logistics', name: 'yacht-logistics', component: YachtLogistics },
-    { path: '/yacht-detailing', name: 'yacht-detailing', component: YachtDetailing },
+    { path: '/yacht-detailing', redirect: '/programas/limpieza-detailing' },
     { path: '/politica-de-privacidad', name: 'politica-privacidad', component: PoliticaPrivacidad },
     { path: '/terminos-y-condiciones', name: 'terminos-condiciones', component: TerminosCondiciones },
-    // Legacy redirect
-    { path: '/servicios', redirect: '/yacht-consulting' },
     // EN routes
     { path: '/en', name: 'home-en', component: Home },
     { path: '/en/nosotros', name: 'nosotros-en', component: Nosotros },
     { path: '/en/proyectos', name: 'proyectos-en', component: Proyectos },
     { path: '/en/galeria', name: 'galeria-en', component: Galeria },
     { path: '/en/contacto', name: 'contacto-en', component: Contacto },
-    { path: '/en/yacht-consulting', name: 'yacht-consulting-en', component: YachtConsulting },
-    { path: '/en/yacht-management', name: 'yacht-management-en', component: YachtManagement },
+    { path: '/en/servicios', name: 'services-en', component: Servicios },
+    ...programRoutes.map(({ slug, programId }) => ({
+      path: `/en/programas/${slug}`,
+      name: `program-${programId}-en`,
+      component: ProgramaDetalle,
+      props: { programId },
+      meta: { programId },
+    })),
+    { path: '/en/bases-revision-gratuita', name: 'promotion-terms-en', component: BasesRevisionGratuita },
+    ...legacyProgramRedirects.map(({ slug, destination }) => ({
+      path: `/en/programas/${slug}`,
+      redirect: `/en/programas/${destination}`,
+    })),
+    { path: '/en/yacht-consulting', redirect: '/en/servicios' },
+    { path: '/en/yacht-management', redirect: '/en/programas/mantenimiento-delegado' },
     { path: '/en/yacht-logistics', name: 'yacht-logistics-en', component: YachtLogistics },
-    { path: '/en/yacht-detailing', name: 'yacht-detailing-en', component: YachtDetailing },
+    { path: '/en/yacht-detailing', redirect: '/en/programas/limpieza-detailing' },
     { path: '/en/politica-de-privacidad', name: 'politica-privacidad-en', component: PoliticaPrivacidad },
     { path: '/en/terminos-y-condiciones', name: 'terminos-condiciones-en', component: TerminosCondiciones },
     // Catch-all

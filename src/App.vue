@@ -6,6 +6,7 @@
   </main>
   <Footer />
   <BookingModal :isOpen="isOpen" :isConsulting="isConsulting" :prefill="prefill" @close="close" />
+  <ProgramBookingModal />
   <TransportRequestModal />
   <DetailingRequestModal />
   <ToastContainer />
@@ -16,6 +17,7 @@
 import Header from './components/Header.vue'
 import Footer from './components/Footer.vue'
 import BookingModal from './components/BookingModal.vue'
+import ProgramBookingModal from './components/ProgramBookingModal.vue'
 import TransportRequestModal from './components/TransportRequestModal.vue'
 import DetailingRequestModal from './components/DetailingRequestModal.vue'
 import ToastContainer from './components/ToastContainer.vue'
