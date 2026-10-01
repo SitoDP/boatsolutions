@@ -44,7 +44,6 @@
           <router-link :to="to('/programas/electronica-asesorada')">{{ lbl.navigationProgram }}</router-link>
           <router-link :to="to('/programas/limpieza-detailing')">{{ lbl.cleaningProgram }}</router-link>
           <router-link :to="to('/programas/listo-para-zarpar')">{{ lbl.completeProgram }}</router-link>
-          <router-link :to="to('/yacht-logistics')">{{ lbl.logistics }}</router-link>
           <router-link :to="to('/contacto')">{{ lbl.contact }}</router-link>
         </div>
 

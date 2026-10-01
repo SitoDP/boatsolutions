@@ -23,12 +23,12 @@ CORE_PATHS = (
     "/servicios",
     *PROGRAM_PATHS,
     "/bases-revision-gratuita",
-    "/yacht-logistics",
     "/contacto",
     "/galeria",
     "/politica-de-privacidad",
     "/terminos-y-condiciones",
     "/en/servicios",
+    "/en/contacto",
     "/en/programas/listo-para-zarpar",
     "/en/bases-revision-gratuita",
     "/en/politica-de-privacidad",
@@ -197,8 +197,10 @@ def check_redirects(page: Page) -> None:
         "/yacht-management": "/programas/mantenimiento-delegado",
         "/yacht-detailing": "/programas/limpieza-detailing",
         "/yacht-consulting": "/servicios",
+        "/yacht-logistics": "/servicios",
         "/programas/zarpa-cuando-quieras": "/programas/listo-para-zarpar",
         "/en/yacht-management": "/en/programas/mantenimiento-delegado",
+        "/en/yacht-logistics": "/en/servicios",
     }
     for source, destination in redirects.items():
         page.goto(f"{BASE_URL}{source}", wait_until="domcontentloaded")

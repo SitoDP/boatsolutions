@@ -63,26 +63,19 @@ describe('program routes', () => {
     ['/yacht-management', '/programas/mantenimiento-delegado'],
     ['/yacht-detailing', '/programas/limpieza-detailing'],
     ['/yacht-consulting', '/servicios'],
+    ['/yacht-logistics', '/servicios'],
     ['/en/programas/barco-sin-preocupaciones', '/en/programas/mantenimiento-delegado'],
     ['/en/programas/navega-seguro', '/en/programas/electronica-asesorada'],
     ['/en/programas/zarpa-cuando-quieras', '/en/programas/listo-para-zarpar'],
     ['/en/yacht-management', '/en/programas/mantenimiento-delegado'],
     ['/en/yacht-detailing', '/en/programas/limpieza-detailing'],
     ['/en/yacht-consulting', '/en/servicios'],
+    ['/en/yacht-logistics', '/en/servicios'],
   ])('redirects %s to the locale-preserving destination %s', async (from, destination) => {
     await router.push(from)
     await router.isReady()
 
     expect(router.currentRoute.value.path).toBe(destination)
-  })
-
-  it.each([
-    ['/yacht-logistics', 'yacht-logistics'],
-    ['/en/yacht-logistics', 'yacht-logistics-en'],
-  ])('keeps %s as the independent Logistics service route', (path, name) => {
-    const resolved = router.resolve(path)
-    expect(resolved.name).toBe(name)
-    expect(resolved.redirectedFrom).toBeUndefined()
   })
 
   it('resolves and renders the cleaning detail with its authoritative program', async () => {

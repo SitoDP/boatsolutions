@@ -19,7 +19,6 @@ const ROUTES_ES = [
   '/programas/limpieza-detailing',
   '/programas/listo-para-zarpar',
   '/bases-revision-gratuita',
-  '/yacht-logistics',
   '/politica-de-privacidad',
   '/terminos-y-condiciones',
 ]

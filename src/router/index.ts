@@ -7,7 +7,6 @@ const Nosotros = () => import('../views/Nosotros.vue')
 const Proyectos = () => import('../views/Proyectos.vue')
 const Galeria = () => import('../views/Galeria.vue')
 const Contacto = () => import('../views/Contacto.vue')
-const YachtLogistics = () => import('../views/YachtLogistics.vue')
 const Servicios = () => import('../views/Servicios.vue')
 const ProgramaDetalle = () => import('../views/ProgramaDetalle.vue')
 const BasesRevisionGratuita = () => import('../views/BasesRevisionGratuita.vue')
@@ -51,7 +50,7 @@ const router = createRouter({
     })),
     { path: '/yacht-consulting', redirect: '/servicios' },
     { path: '/yacht-management', redirect: '/programas/mantenimiento-delegado' },
-    { path: '/yacht-logistics', name: 'yacht-logistics', component: YachtLogistics },
+    { path: '/yacht-logistics', redirect: '/servicios' },
     { path: '/yacht-detailing', redirect: '/programas/limpieza-detailing' },
     { path: '/politica-de-privacidad', name: 'politica-privacidad', component: PoliticaPrivacidad },
     { path: '/terminos-y-condiciones', name: 'terminos-condiciones', component: TerminosCondiciones },
@@ -76,7 +75,7 @@ const router = createRouter({
     })),
     { path: '/en/yacht-consulting', redirect: '/en/servicios' },
     { path: '/en/yacht-management', redirect: '/en/programas/mantenimiento-delegado' },
-    { path: '/en/yacht-logistics', name: 'yacht-logistics-en', component: YachtLogistics },
+    { path: '/en/yacht-logistics', redirect: '/en/servicios' },
     { path: '/en/yacht-detailing', redirect: '/en/programas/limpieza-detailing' },
     { path: '/en/politica-de-privacidad', name: 'politica-privacidad-en', component: PoliticaPrivacidad },
     { path: '/en/terminos-y-condiciones', name: 'terminos-condiciones-en', component: TerminosCondiciones },

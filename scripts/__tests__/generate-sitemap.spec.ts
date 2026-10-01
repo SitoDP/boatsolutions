@@ -24,7 +24,6 @@ describe('generated sitemap', () => {
       '/programas/limpieza-detailing',
       '/programas/listo-para-zarpar',
       '/bases-revision-gratuita',
-      '/yacht-logistics',
     ]) {
       expect(xml).toContain(`<loc>https://boat-solutions.es${path}</loc>`)
       expect(xml).toContain(`hreflang="en" href="https://boat-solutions.es/en${path}"`)
@@ -41,8 +40,10 @@ describe('generated sitemap', () => {
       '/programas/barco-sin-preocupaciones',
       '/programas/navega-seguro',
       '/programas/zarpa-cuando-quieras',
+      '/yacht-logistics',
     ]) {
       expect(xml).not.toContain(`<loc>https://boat-solutions.es${path}</loc>`)
     }
+    expect(xml).not.toContain('/en/yacht-logistics')
   })
 })

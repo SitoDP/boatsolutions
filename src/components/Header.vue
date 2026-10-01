@@ -64,8 +64,6 @@
           </Transition>
         </div>
 
-        <router-link data-logistics-link :to="to('/yacht-logistics')" class="nav-link nav-link-desktop-logistics" @click="close">{{ lbl.logistics }}</router-link>
-
         <router-link :to="to('/galeria')" class="nav-link" @click="close">{{ lbl.gallery }}</router-link>
         <router-link :to="to('/contacto')" class="nav-link" @click="close">{{ lbl.contact }}</router-link>
 
@@ -77,8 +75,6 @@
           <router-link :to="to('/programas/limpieza-detailing')" class="nav-link nav-link-sub" @click="close">{{ lbl.cleaningProgram }}</router-link>
           <router-link :to="to('/programas/listo-para-zarpar')" class="nav-link nav-link-sub" @click="close">{{ lbl.completeProgram }}</router-link>
         </div>
-        <router-link data-logistics-mobile-link :to="to('/yacht-logistics')" class="nav-link nav-link-mobile-logistics" @click="close">{{ lbl.logistics }}</router-link>
-
       </nav>
 
       <button class="btn btn-primary btn-reserve" @click="openBooking('consulting')">
@@ -414,7 +410,6 @@ const close = () => {
 
 /* ── Mobile services ── */
 .nav-services-mobile { display: none; }
-.nav-link-mobile-logistics { display: none; }
 
 @media (max-width: 1024px) {
   .menu-toggle { display: flex; }
@@ -471,9 +466,6 @@ const close = () => {
     margin: 4px 0;
     gap: 2px;
   }
-
-  .nav-link-desktop-logistics { display: none; }
-  .nav-link-mobile-logistics { display: block; }
 
   .nav-services-title {
     font-family: var(--font-heading);
