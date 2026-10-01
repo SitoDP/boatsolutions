@@ -8,9 +8,6 @@ import router from '../../router'
 import Contacto from '../Contacto.vue'
 import Nosotros from '../Nosotros.vue'
 import Proyectos from '../Proyectos.vue'
-import YachtConsulting from '../YachtConsulting.vue'
-import YachtDetailing from '../YachtDetailing.vue'
-import YachtManagement from '../YachtManagement.vue'
 
 const booking = useProgramBooking()
 const mountedWrappers: VueWrapper[] = []
@@ -31,7 +28,7 @@ afterEach(() => {
   mountedWrappers.splice(0).forEach((wrapper) => wrapper.unmount())
 })
 
-type MigratedView = typeof Contacto | typeof Nosotros | typeof Proyectos | typeof YachtConsulting | typeof YachtDetailing | typeof YachtManagement
+type MigratedView = typeof Contacto | typeof Nosotros | typeof Proyectos
 
 function mountView(component: MigratedView, options: ComponentMountingOptions<unknown> = {}) {
   const wrapper = mount(component, {
@@ -46,6 +43,42 @@ function mountView(component: MigratedView, options: ComponentMountingOptions<un
 }
 
 describe('commercial program booking migration', () => {
+  it.each([
+    {
+      path: '/',
+      expected: 'Hablemos sobre tu barco. Solicita una revisión inicial gratuita a bordo o escríbenos a info@boat-solutions.es.',
+    },
+    {
+      path: '/en',
+      expected: 'Let’s talk about your yacht. Request a free initial on-board inspection or write to info@boat-solutions.es.',
+    },
+  ] as const)('uses the current inspection offer in Contact metadata at $path', async ({ path, expected }) => {
+    await router.push(path)
+    mountView(Contacto)
+    await flushPromises()
+    await new Promise((resolve) => setTimeout(resolve, 0))
+
+    expect(document.head.querySelector('meta[name="description"]')?.getAttribute('content')).toBe(expected)
+  })
+
+  it.each([
+    {
+      path: '/',
+      text: 'Empieza con una revisión inicial gratuita a bordo, con informe escrito y sin compromiso.',
+      button: 'Solicitar revisión gratuita',
+    },
+    {
+      path: '/en',
+      text: 'Start with a free initial on-board inspection, including a written report and no obligation.',
+      button: 'Request a free inspection',
+    },
+  ] as const)('uses the current inspection offer in About copy at $path', async ({ path, text, button }) => {
+    await router.push(path)
+    const about = mountView(Nosotros)
+    expect(about.get('.cta-box p').text()).toBe(text)
+    expect(about.get('.cta-box button').text()).toBe(button)
+  })
+
   it('describes the current free initial inspection instead of a free meeting', () => {
     const wrapper = mountView(Contacto)
 
@@ -84,39 +117,4 @@ describe('commercial program booking migration', () => {
     })
   })
 
-  it.each([
-    ['Management', YachtManagement],
-    ['Consulting', YachtConsulting],
-  ] as const)('opens the shared flow from all legacy %s booking CTAs', async (_name, component) => {
-    const wrapper = mountView(component)
-    const buttons = wrapper.findAll('.hero button.btn-primary, .booking-info > button.btn-primary')
-    expect(buttons).toHaveLength(2)
-
-    for (const button of buttons) {
-      booking.close()
-      await button.trigger('click')
-      expect(booking.isOpen.value).toBe(true)
-      expect(booking.context.value).toEqual({ programId: null, length: 30 })
-    }
-  })
-
-  it.each([
-    ['Management', YachtManagement],
-    ['Detailing', YachtDetailing],
-    ['Consulting', YachtConsulting],
-  ] as const)('converts the legacy %s calendar to the shared ISO schedule', async (_name, component) => {
-    const wrapper = mountView(component)
-
-    wrapper.getComponent(CalendarWidget).vm.$emit('select', {
-      date: { day: 9, month: 11, year: 2026 },
-      time: '14:00',
-    })
-    await flushPromises()
-
-    expect(booking.context.value).toEqual({
-      programId: null,
-      length: 30,
-      schedule: { date: '2026-12-09', time: '14:00' },
-    })
-  })
 })

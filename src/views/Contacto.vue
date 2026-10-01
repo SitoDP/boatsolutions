@@ -173,11 +173,11 @@ import { validateEmail, type EmailValidation } from '../lib/email'
 usePageMeta({
   es: {
     title: 'Contacto',
-    description: 'Hablemos sobre tu barco. Reserva una cita gratuita o escríbenos a info@boat-solutions.es.',
+    description: 'Hablemos sobre tu barco. Solicita una revisión inicial gratuita a bordo o escríbenos a info@boat-solutions.es.',
   },
   en: {
     title: 'Contact',
-    description: 'Let’s talk about your yacht. Book a free meeting or write to info@boat-solutions.es.',
+    description: 'Let’s talk about your yacht. Request a free initial on-board inspection or write to info@boat-solutions.es.',
   },
 })
 

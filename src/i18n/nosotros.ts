@@ -28,8 +28,8 @@ export const nosotros = {
     visionTitle: 'Nuestra Visión',
     visionText: 'Ser el referente en gestión náutica profesional en las Rías Baixas y el noroeste de España, creciendo con la confianza de cada armador que deposita su barco en nuestras manos.',
     ctaTitle: '¿Quieres conocernos?',
-    ctaText: 'La primera reunión es gratuita y sin compromiso. Cuéntanos lo que necesitas.',
-    ctaBtn: 'Reservar reunión gratuita',
+    ctaText: 'Empieza con una revisión inicial gratuita a bordo, con informe escrito y sin compromiso.',
+    ctaBtn: 'Solicitar revisión gratuita',
   },
   en: {
     heroLabel: 'About Us',
@@ -60,7 +60,7 @@ export const nosotros = {
     visionTitle: 'Our Vision',
     visionText: 'To become the reference for professional nautical management in the Rías Baixas and north-west Spain, growing through the trust of every owner who places their boat in our hands.',
     ctaTitle: 'Want to meet us?',
-    ctaText: 'The first meeting is free and without obligation. Tell us what you need.',
-    ctaBtn: 'Book a free meeting',
+    ctaText: 'Start with a free initial on-board inspection, including a written report and no obligation.',
+    ctaBtn: 'Request a free inspection',
   },
 }
