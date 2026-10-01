@@ -1,0 +1,280 @@
+@scope (.programs-surface) {
+.detail-page-real {
+  --detail-section-space: clamp(4.5rem, 9vw, 7.5rem);
+}
+
+.detail-page-real h1,
+.detail-page-real h2,
+.detail-page-real h3,
+.detail-page-real p,
+.detail-page-real li,
+.detail-page-real a {
+  overflow-wrap: anywhere;
+}
+
+.detail-page-real .detail-subtitle {
+  max-width: 42rem;
+  margin: 0 0 2rem;
+  color: #d8e4eb;
+  font-size: clamp(1rem, 1.8vw, 1.25rem);
+  line-height: 1.65;
+}
+
+.detail-content-section,
+.detail-workflow,
+.detail-list-section,
+.detail-case,
+.program-conditions,
+.program-faq,
+.detail-final-cta,
+.detail-saving-callout {
+  padding: var(--detail-section-space) clamp(1.5rem, 5vw, 4.5rem);
+}
+
+.detail-problem,
+.detail-list-section,
+.detail-case {
+  display: grid;
+  grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr);
+  gap: clamp(2rem, 6vw, 6rem);
+}
+
+.detail-problem {
+  align-items: end;
+  background: var(--mist);
+}
+
+.detail-problem > p {
+  max-width: 48rem;
+  margin: 0;
+  color: #52616c;
+  font-size: clamp(1.08rem, 2vw, 1.35rem);
+  line-height: 1.8;
+}
+
+.detail-page-real .detail-fit ul,
+.detail-page-real .detail-list-section ul,
+.program-conditions ul {
+  margin: 1.75rem 0 0;
+  padding-left: 1.2rem;
+  color: #52616c;
+  line-height: 1.75;
+}
+
+.detail-page-real li + li {
+  margin-top: .75rem;
+}
+
+.detail-workflow {
+  background: var(--ocean-deep);
+  color: var(--white);
+}
+
+.detail-section-heading {
+  max-width: 48rem;
+  margin-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.detail-workflow-grid,
+.program-conditions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+}
+
+.detail-workflow-grid article {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-top: 1px solid rgba(255, 255, 255, .35);
+}
+
+.detail-workflow-grid span {
+  color: var(--sea-glass);
+  font: 700 1rem 'Montserrat', sans-serif;
+}
+
+.detail-workflow-grid p {
+  color: #d8e4eb;
+  line-height: 1.7;
+}
+
+.detail-list-section,
+.detail-case {
+  border-bottom: 1px solid var(--line);
+}
+
+.detail-exclusions,
+.program-conditions {
+  background: #f4f7f8;
+}
+
+.detail-case > div:last-child {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-left: 4px solid var(--detail-accent);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.detail-case > div:last-child p {
+  color: #52616c;
+  line-height: 1.75;
+}
+
+.program-conditions-price {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 1rem 2rem;
+  align-items: baseline;
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  border-left: 4px solid var(--detail-accent);
+  background: var(--white);
+  box-shadow: var(--shadow);
+}
+
+.program-conditions-price p {
+  margin: 0;
+}
+
+.program-conditions-price strong {
+  font: 700 clamp(2.3rem, 5vw, 4rem) 'Montserrat', sans-serif;
+  letter-spacing: -.06em;
+}
+
+.program-conditions > .length-selector {
+  margin: 1.25rem 0 2rem;
+  background: var(--white);
+}
+
+.program-conditions-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 2rem;
+}
+
+.program-conditions-grid article,
+.program-withdrawal-condition,
+.program-specific-conditions {
+  padding: clamp(1.5rem, 4vw, 2.5rem);
+  background: var(--white);
+  border: 1px solid var(--line);
+}
+
+.program-specific-conditions {
+  margin-top: 1px;
+}
+
+.program-withdrawal-condition {
+  margin-top: 1px;
+}
+
+.program-withdrawal-condition p {
+  max-width: 62rem;
+  color: #52616c;
+  line-height: 1.75;
+}
+
+.program-withdrawal-condition .program-legal-review {
+  display: inline-block;
+  padding: .65rem .85rem;
+  border-left: 3px solid var(--detail-accent);
+  background: #eef2f4;
+  color: var(--ocean-deep);
+  font-weight: 700;
+}
+
+.detail-saving-callout {
+  text-align: center;
+  background: var(--detail-accent);
+  color: var(--ink);
+}
+
+.detail-saving-callout .section-kicker {
+  color: var(--ocean-deep);
+}
+
+.program-faq-list {
+  border-top: 1px solid var(--line);
+}
+
+.program-faq-item {
+  border-bottom: 1px solid var(--line);
+}
+
+.program-faq-item h3 {
+  margin: 0;
+}
+
+.program-faq-item button {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--ocean-deep);
+  font: 700 clamp(1rem, 2vw, 1.25rem) 'Montserrat', sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+
+.program-faq-item button:focus-visible {
+  outline: 3px solid var(--detail-accent);
+  outline-offset: 4px;
+}
+
+.program-faq-answer {
+  max-width: 52rem;
+  padding: 0 0 1.5rem;
+  color: #52616c;
+  line-height: 1.75;
+}
+
+.detail-final-cta {
+  text-align: center;
+  background: var(--ocean-deep);
+  color: var(--white);
+}
+
+.detail-final-cta h2 {
+  max-width: 52rem;
+  margin: 0 auto 2rem;
+}
+
+@media (max-width: 1024px) {
+  .detail-page-real .detail-hero,
+  .detail-problem,
+  .detail-page-real .detail-fit,
+  .detail-page-real .detail-included,
+  .detail-list-section,
+  .detail-case,
+  .detail-workflow-grid,
+  .program-conditions-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .program-conditions-price {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 640px) {
+  .detail-page-real {
+    width: min(100% - 1rem, 1180px);
+  }
+
+  .detail-content-section,
+  .detail-workflow,
+  .detail-list-section,
+  .detail-case,
+  .program-conditions,
+  .program-faq,
+  .detail-final-cta,
+  .detail-saving-callout {
+    padding-inline: 1.25rem;
+  }
+
+  .program-conditions-price {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+}

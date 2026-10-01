@@ -1,0 +1,65 @@
+// @vitest-environment jsdom
+import { mount } from '@vue/test-utils'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { defineComponent } from 'vue'
+import { useProgramBooking } from '../../composables/useProgramBooking'
+import { useProgramSelection } from '../../composables/useProgramSelection'
+import BasesRevisionGratuita from '../BasesRevisionGratuita.vue'
+import ProgramaDetalle from '../ProgramaDetalle.vue'
+import Servicios from '../Servicios.vue'
+
+const RouterLinkStub = defineComponent({
+  props: { to: { type: String, required: true } },
+  template: '<a :href="to"><slot /></a>',
+})
+
+describe('production program views', () => {
+  beforeEach(() => {
+    useProgramBooking().close()
+    useProgramSelection().selectedLength.value = 30
+  })
+
+  it('shows four VAT-inclusive programs and updates quota immediately above the selector', async () => {
+    const wrapper = mount(Servicios, { global: { stubs: { RouterLink: RouterLinkStub } } })
+    const cards = wrapper.findAll('[data-program]')
+
+    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(cards.map((card) => card.attributes('data-price'))).toEqual(['215', '130', '85', '360'])
+    expect(cards.every((card) => card.text().includes('IVA incluido'))).toBe(true)
+    await wrapper.get('[data-length="50"]').trigger('click')
+    expect(wrapper.findAll('[data-program]').map((card) => card.attributes('data-price'))).toEqual(['355', '215', '145', '600'])
+    expect(wrapper.get('[data-program="complete"]').text()).toContain('Ahorras 115 €/mes')
+  })
+
+  it('opens a card booking with the current program and length', async () => {
+    const wrapper = mount(Servicios, { global: { stubs: { RouterLink: RouterLinkStub } } })
+    await wrapper.get('[data-length="45"]').trigger('click')
+    await wrapper.get('[data-booking-cta="card-ready"]').trigger('click')
+    expect(useProgramBooking().context.value).toEqual({ programId: 'ready', length: 45 })
+  })
+
+  it('renders detail terms with the length selector directly below the quota', () => {
+    const wrapper = mount(ProgramaDetalle, {
+      props: { programId: 'care' },
+      global: { stubs: { RouterLink: RouterLinkStub } },
+    })
+    const conditions = wrapper.get('[data-detail-conditions]')
+    const price = conditions.get('.program-conditions-price').element
+    const selector = conditions.get('.length-selector').element
+
+    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(price.compareDocumentPosition(selector) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy()
+    expect(conditions.text()).toContain('IVA incluido')
+    expect(conditions.text()).toContain('14 días naturales')
+  })
+
+  it('publishes all seven free-inspection conditions and the privacy policy', () => {
+    const wrapper = mount(BasesRevisionGratuita)
+    expect(wrapper.get('main').classes()).toContain('programs-surface')
+    expect(wrapper.findAll('[data-promotion-condition]')).toHaveLength(7)
+    expect(wrapper.text()).toContain('120 €')
+    expect(wrapper.text()).toContain('IVA incluido')
+    expect(wrapper.text()).toContain('31 de octubre de 2026')
+    expect(wrapper.get('a').attributes('href')).toBe('https://boat-solutions.es/politica-de-privacidad')
+  })
+})

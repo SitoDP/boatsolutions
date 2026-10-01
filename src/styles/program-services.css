@@ -1,0 +1,101 @@
+@scope (.programs-surface) {
+.inspection-value {
+  display: grid;
+  gap: 5px;
+}
+
+.inspection-value a {
+  margin-top: 8px;
+  color: var(--ocean-deep);
+  font: 600 .72rem 'Montserrat', sans-serif;
+  text-underline-offset: 4px;
+}
+
+.program-conditions {
+  margin: 10px 0 0;
+  color: #5b6c78;
+  font-size: .72rem;
+  line-height: 1.45;
+}
+
+.featured .program-conditions {
+  color: rgba(255, 255, 255, .76);
+}
+
+.program-additional {
+  margin: -10px 0 26px;
+  padding-left: 12px;
+  border-left: 2px solid var(--teak);
+  color: #5b6c78;
+  font-size: .72rem;
+  line-height: 1.5;
+}
+
+.comparison-row span {
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 740px) {
+  .hero-section,
+  .inspection-banner,
+  .programs-section,
+  .comparison-section,
+  .proof-section {
+    width: min(100% - 24px, 1180px);
+  }
+
+  .hero-copy,
+  .program-card:not(.featured),
+  .program-card.featured,
+  .guarantee-panel {
+    padding-right: 24px;
+    padding-left: 24px;
+  }
+
+  .hero-copy h1 {
+    font-size: clamp(2.65rem, 13vw, 4rem);
+    overflow-wrap: anywhere;
+  }
+
+  .inspection-banner {
+    margin-top: 0;
+  }
+
+  .length-options {
+    grid-template-columns: repeat(5, minmax(70px, 1fr));
+  }
+
+  .comparison-row {
+    grid-template-columns: 1fr;
+  }
+
+  .comparison-row > :first-child {
+    grid-column: 1;
+  }
+
+  .comparison-row span::before {
+    content: none !important;
+  }
+
+  .comparison-row span {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+  }
+
+  .comparison-row span::after {
+    color: #657681;
+    font-size: .62rem;
+    text-transform: uppercase;
+  }
+
+  .comparison-row span:nth-child(2)::after { content: 'Mantenimiento'; }
+  .comparison-row span:nth-child(3)::after { content: 'Electrónica'; }
+  .comparison-row span:nth-child(4)::after { content: 'Limpieza'; }
+  .comparison-row span:nth-child(5)::after { content: 'Completo'; }
+
+  .testimonial-panel {
+    min-height: 480px;
+  }
+}
+}
