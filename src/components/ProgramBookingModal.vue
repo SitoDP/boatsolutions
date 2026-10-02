@@ -387,6 +387,12 @@ onBeforeUnmount(() => {
 @media (max-width: 820px) {
   .booking-overlay { padding: 0; align-items: stretch; }
   .booking-modal { width: 100%; max-height: 100vh; }
+  .booking-close {
+    position: fixed;
+    z-index: 3001;
+    top: max(16px, env(safe-area-inset-top, 0px));
+    right: max(16px, env(safe-area-inset-right, 0px));
+  }
   .booking-layout { grid-template-columns: 1fr; }
   .booking-calendar-column { border-right: 0; border-bottom: 1px solid var(--line); }
   .booking-success dl { grid-template-columns: 1fr 1fr; }

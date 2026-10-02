@@ -94,6 +94,14 @@ describe('program booking flow', () => {
     expect(modalLayer).toBeGreaterThan(whatsappLayer)
   })
 
+  it('keeps the close control fixed while the mobile dialog scrolls', () => {
+    const modalSource = fs.readFileSync(path.resolve(process.cwd(), 'src/components/ProgramBookingModal.vue'), 'utf8')
+    const mobileStyles = modalSource.match(/@media \(max-width: 820px\)\s*\{([\s\S]*?)\n\}/)?.[1] ?? ''
+
+    expect(mobileStyles).toMatch(/\.booking-close\s*\{[^}]*position:\s*fixed/s)
+    expect(mobileStyles).toMatch(/\.booking-close\s*\{[^}]*z-index:\s*3001/s)
+  })
+
   it('opens promotion terms in a new tab without clearing the booking draft', async () => {
     booking.open({ programId: 'navigation', length: 40 })
     const wrapper = mount(ProgramBookingModal, {
