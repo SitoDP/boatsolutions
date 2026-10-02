@@ -1,6 +1,8 @@
 // @vitest-environment jsdom
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import fs from 'node:fs'
+import path from 'node:path'
 import ProgramBookingModal from '../ProgramBookingModal.vue'
 import ProgramBookingCalendar from '../ProgramBookingCalendar.vue'
 import { useProgramBooking } from '../../composables/useProgramBooking'
@@ -78,6 +80,18 @@ describe('program booking flow', () => {
     })
 
     expect(wrapper.get('.booking-overlay').classes()).toContain('programs-surface')
+  })
+
+  it('stacks the booking dialog above the fixed header and floating actions', () => {
+    const modalSource = fs.readFileSync(path.resolve(process.cwd(), 'src/components/ProgramBookingModal.vue'), 'utf8')
+    const headerSource = fs.readFileSync(path.resolve(process.cwd(), 'src/components/Header.vue'), 'utf8')
+    const whatsappSource = fs.readFileSync(path.resolve(process.cwd(), 'src/components/WhatsAppButton.vue'), 'utf8')
+    const modalLayer = Number(modalSource.match(/\.booking-overlay\s*\{[^}]*z-index:\s*(\d+)/s)?.[1])
+    const headerLayer = Number(headerSource.match(/\.header\s*\{[^}]*z-index:\s*(\d+)/s)?.[1])
+    const whatsappLayer = Number(whatsappSource.match(/\.whatsapp-btn\s*\{[^}]*z-index:\s*(\d+)/s)?.[1])
+
+    expect(modalLayer).toBeGreaterThan(headerLayer)
+    expect(modalLayer).toBeGreaterThan(whatsappLayer)
   })
 
   it('opens promotion terms in a new tab without clearing the booking draft', async () => {

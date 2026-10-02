@@ -351,7 +351,7 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
-.booking-overlay { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(8, 18, 26, .78); backdrop-filter: blur(8px); }
+.booking-overlay { position: fixed; z-index: 3000; inset: 0; display: grid; place-items: center; padding: 24px; background: rgba(8, 18, 26, .78); backdrop-filter: blur(8px); }
 .booking-modal { position: relative; width: min(1120px, 100%); max-height: calc(100vh - 48px); overflow-y: auto; background: var(--foam); box-shadow: 0 32px 90px rgba(0,0,0,.35); }
 .booking-close { position: absolute; z-index: 2; top: 18px; right: 20px; width: 44px; height: 44px; border: 1px solid rgba(255,255,255,.35); background: transparent; color: var(--white); font-size: 1.8rem; cursor: pointer; }
 .booking-modal-header { padding: 38px clamp(28px, 5vw, 60px) 32px; background: var(--ocean-deep); color: var(--white); }
