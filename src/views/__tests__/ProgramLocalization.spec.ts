@@ -131,7 +131,8 @@ describe('program localization routes', () => {
     expect(wrapper.text()).toContain('VAT included')
     expect(wrapper.text()).toContain('31/10/2026')
     expect(wrapper.find('[data-legal-review]').exists()).toBe(false)
-    expect(wrapper.get('a').attributes('href')).toBe('/en/politica-de-privacidad')
+    expect(wrapper.get('[data-promotion-summary-group]').attributes('aria-label')).toBe('Promotion summary')
+    expect(wrapper.get('.promotion-terms__privacy a').attributes('href')).toBe('/en/politica-de-privacidad')
     expect(wrapper.text()).not.toMatch(/Bases de la promoción|Condiciones de la revisión|Una revisión por propietario|Política de Privacidad/)
   })
 

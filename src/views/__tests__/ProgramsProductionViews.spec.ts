@@ -81,11 +81,24 @@ describe('production program views', () => {
     const wrapper = mount(BasesRevisionGratuita, { global: { plugins: [router, createHead()] } })
     expect(wrapper.element.tagName).toBe('DIV')
     expect(wrapper.classes()).toContain('programs-surface')
+    expect(wrapper.get('[data-promotion-hero]').text()).toContain('Bases de la promoción')
+    expect(wrapper.findAll('[data-promotion-summary]')).toHaveLength(3)
+    expect(wrapper.find('[data-promotion-layout]').exists()).toBe(true)
+    expect(wrapper.get('.promotion-terms__sidebar').text()).toContain('31/10/2026')
     expect(wrapper.findAll('[data-promotion-condition]')).toHaveLength(7)
     expect(wrapper.text()).toContain('120 €')
     expect(wrapper.text()).toContain('IVA incluido')
     expect(wrapper.text()).toContain('31/10/2026')
     expect(wrapper.find('[data-legal-review]').exists()).toBe(false)
-    expect(wrapper.get('a').attributes('href')).toBe('/politica-de-privacidad')
+    expect(wrapper.get('.promotion-terms__privacy a').attributes('href')).toBe('/politica-de-privacidad')
+  })
+
+  it('opens the free-inspection booking from the promotion terms sidebar', async () => {
+    const wrapper = mount(BasesRevisionGratuita, { global: { plugins: [router, createHead()] } })
+
+    await wrapper.get('[data-booking-cta="promotion-terms"]').trigger('click')
+
+    expect(useProgramBooking().isOpen.value).toBe(true)
+    expect(useProgramBooking().context.value).toEqual({ programId: null, length: 30 })
   })
 })

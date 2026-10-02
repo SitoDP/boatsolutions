@@ -1,8 +1,10 @@
+import type { BoatLength } from './programs'
+
 export interface FreeInspectionPromotion {
   readonly durationHours: number
   readonly reportValue: number
   readonly slotLimit: number
-  readonly minimumLength: number
+  readonly minimumLength: BoatLength
   readonly region: string
   readonly bookingDeadline: string
   readonly perOwnerAndBoat: boolean
